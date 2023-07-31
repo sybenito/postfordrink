@@ -3,10 +3,16 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import { FIREBASE_CONFIG } from "../secrets";
 
+interface AuthContextType {
+  isSignedIn: boolean;
+  user: firebase.User | null;
+  fb: firebase.app.App | null;
+}
+
 const fbInit: firebase.app.App = firebase.initializeApp(FIREBASE_CONFIG);
 
-function useAuth() {
-  const [isSignedIn, setIsSignedIn] = useState(false);
+const useAuth = (): AuthContextType => {
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [user, setUser] = useState<firebase.User | null>(null);
   const [fb, setFb] = useState<firebase.app.App | null>(null);
 
@@ -25,5 +31,7 @@ function useAuth() {
   }, []);
 
   return { isSignedIn, user, fb };
-}
+};
+
 export default useAuth;
+export type { AuthContextType };
