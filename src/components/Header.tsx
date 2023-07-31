@@ -11,7 +11,7 @@ const Header: FC = () => {
   return (
     <header className="app-header">
       <div className="logo">
-        <h1>TaskBan</h1>
+        <h1>Post n Drink</h1>
         {authContext.isSignedIn && <span className="user-name">&#8212;&nbsp; {authContext.user?.displayName}</span>}
       </div>
       <div className="login-action">
