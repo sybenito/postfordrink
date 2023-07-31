@@ -1,0 +1,27 @@
+@import "variables";
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem;
+  margin-bottom: 1rem;
+  height: 3rem;
+  background-color: $orange;
+  border-bottom: 1px solid $border-gray;
+  box-shadow: $box-shadow;
+  .logo {
+    letter-spacing: -0.1rem;
+    color: $title-gray;
+    display: flex;
+    align-items: center;
+    h1 {
+      margin-right: 0.5rem;
+    }
+  }
+  .login-action {
+    button {
+      margin-right: 1rem;
+    }
+  }
+}
