@@ -1,12 +1,14 @@
 import "../styles/Header.scss";
 import React, { useContext } from "react";
 import type { FC } from "react";
-import SignIn from "./SignIn";
+import SignOut from "./SignOut";
+import useAuth from "../hooks/Auth";
 import AuthContext from "../store/auth-context";
 import type { AuthContextType } from "../hooks/Auth";
 
 const Header: FC = () => {
   const authContext = useContext<AuthContextType>(AuthContext);
+  const { isSignedIn } = useAuth();
 
   return (
     <header className="app-header">
@@ -14,9 +16,7 @@ const Header: FC = () => {
         <h1>Post n Drink</h1>
         {authContext.isSignedIn && <span className="user-name">&#8212;&nbsp; {authContext.user?.displayName}</span>}
       </div>
-      <div className="login-action">
-        <SignIn />
-      </div>
+      <div className="login-action">{isSignedIn === true && <SignOut />}</div>
     </header>
   );
 };

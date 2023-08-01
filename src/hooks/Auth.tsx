@@ -4,7 +4,7 @@ import "firebase/compat/auth";
 import { FIREBASE_CONFIG } from "../secrets";
 
 interface AuthContextType {
-  isSignedIn: boolean;
+  isSignedIn: boolean | null;
   user: firebase.User | null;
   fb: firebase.app.App | null;
 }
@@ -12,7 +12,7 @@ interface AuthContextType {
 const fbInit: firebase.app.App = firebase.initializeApp(FIREBASE_CONFIG);
 
 const useAuth = (): AuthContextType => {
-  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+  const [isSignedIn, setIsSignedIn] = useState<boolean | null>(null);
   const [user, setUser] = useState<firebase.User | null>(null);
   const [fb, setFb] = useState<firebase.app.App | null>(null);
 

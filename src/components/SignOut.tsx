@@ -1,11 +1,9 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import type { FC } from "react";
 import { Button, Avatar } from "antd";
 import firebase from "firebase/compat/app";
-import * as firebaseui from "firebaseui";
 import "firebase/compat/auth";
 import AuthContext from "../store/auth-context";
-
 import type { AuthContextType } from "../hooks/Auth";
 
 import "firebaseui/dist/firebaseui.css";
@@ -20,24 +18,15 @@ const uiConfig = {
   },
 };
 
-const SignIn: FC = () => {
+const SignOut: FC = () => {
   const { user } = useContext<AuthContextType>(AuthContext);
 
-  useEffect(() => {
-    const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(firebase.auth());
-    ui.start("#firebaseui-auth-container", uiConfig);
-  }, []);
-
   return (
-    <div className="sign-in">
-      <div className="register">
-        <h2>Join Up!</h2>
-      </div>
-      <div id="firebaseui-auth-container">
-        <h3>Sign In</h3>
-      </div>
+    <div className="sign-out">
+      <Button onClick={() => firebase.auth().signOut()}>Sign-out</Button>
+      {user && <Avatar src={user.photoURL} />}
     </div>
   );
 };
 
-export default SignIn;
+export default SignOut;
