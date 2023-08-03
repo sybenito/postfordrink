@@ -1,19 +1,20 @@
 import React from "react";
 import type { FC } from "react";
-import AuthContext from "./store/auth-context";
 import useAuth from "./hooks/Auth";
 import Header from "./components/Header";
 import SignIn from "./components/SignIn";
+import PhotoUpload from "./components/PhotoUpload";
 
 const App: FC = () => {
-  const { isSignedIn, user, fb } = useAuth();
+  const { isSignedIn } = useAuth();
 
   return (
     <div className="App">
       <Header />
       <main className="App-header">
-        <h1>Drinks!</h1>
+        <h1>Upload a Photo</h1>
         {isSignedIn === false && <SignIn />}
+        {isSignedIn === true && <PhotoUpload />}
       </main>
     </div>
   );
