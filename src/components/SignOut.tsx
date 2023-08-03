@@ -8,16 +8,6 @@ import type { AuthContextType } from "../hooks/Auth";
 
 import "firebaseui/dist/firebaseui.css";
 
-// Configure FirebaseUI.
-const uiConfig = {
-  signInFlow: "popup",
-  signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
-  callbacks: {
-    // Avoid redirects after sign-in.
-    signInSuccessWithAuthResult: () => false,
-  },
-};
-
 const SignOut: FC = () => {
   const { user } = useContext<AuthContextType>(AuthContext);
 

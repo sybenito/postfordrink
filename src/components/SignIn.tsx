@@ -1,12 +1,8 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import type { FC } from "react";
-import { Button, Avatar } from "antd";
 import firebase from "firebase/compat/app";
 import * as firebaseui from "firebaseui";
 import "firebase/compat/auth";
-import AuthContext from "../store/auth-context";
-
-import type { AuthContextType } from "../hooks/Auth";
 
 import "firebaseui/dist/firebaseui.css";
 
@@ -21,8 +17,6 @@ const uiConfig = {
 };
 
 const SignIn: FC = () => {
-  const { user } = useContext<AuthContextType>(AuthContext);
-
   useEffect(() => {
     const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(firebase.auth());
     ui.start("#firebaseui-auth-container", uiConfig);
