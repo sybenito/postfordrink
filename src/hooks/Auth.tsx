@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import { FIREBASE_CONFIG } from "../secrets";
+import FIREBASE_CONFIG from "../secrets";
 
 interface AuthContextType {
   isSignedIn: boolean | null;

@@ -1,4 +1,4 @@
-export const FIREBASE_CONFIG = {
+const FIREBASE_CONFIG = {
   apiKey: "AIzaSyDFKCpWgKCWXsRVlApfSh-a2NTNEjZxQ4w",
   authDomain: "postfordrink.firebaseapp.com",
   projectId: "postfordrink",
@@ -7,3 +7,5 @@ export const FIREBASE_CONFIG = {
   appId: "1:9659637025:web:c6ffb2670964235f3fb260",
   measurementId: "G-LV3HKY6NHZ",
 };
+
+export default FIREBASE_CONFIG;
