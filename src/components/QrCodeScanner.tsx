@@ -17,8 +17,10 @@ const QRCodeScanner: React.FC = () => {
     const startScanner = async () => {
       try {
         const codeReader: BrowserMultiFormatReader = new BrowserMultiFormatReader();
-        const mediaStream: MediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
-
+        const facingMode = { exact: 'environment' }; // Use 'environment' for the back camera
+        const mediaStream: MediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode },
+        });
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
           codeReaderRef.current = codeReader;
