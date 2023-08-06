@@ -5,7 +5,7 @@ import type { UploadRequestOption } from "rc-upload/lib/interface";
 import { CameraOutlined } from "@ant-design/icons";
 import { Upload, message } from "antd";
 import ImgCrop from "antd-img-crop";
-import useAuth from "../hooks/Auth";
+import useAuth from "src/hooks/Auth";
 
 const storage: FirebaseStorage = getStorage();
 

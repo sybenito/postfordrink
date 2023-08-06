@@ -3,8 +3,8 @@ import type { FC } from "react";
 import { Button, Avatar } from "antd";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import AuthContext from "../store/auth-context";
-import type { AuthContextType } from "../hooks/Auth";
+import AuthContext from "../../store/auth-context";
+import type { AuthContextType } from "../../hooks/Auth";
 
 import "firebaseui/dist/firebaseui.css";
 

@@ -1,10 +1,10 @@
-import "../styles/Header.scss";
+import "src/components/Header/Header.scss";
 import React, { useContext } from "react";
 import type { FC } from "react";
-import SignOut from "./SignOut";
-import useAuth from "../hooks/Auth";
-import AuthContext from "../store/auth-context";
-import type { AuthContextType } from "../hooks/Auth";
+import SignOut from "src/components/SignIn/SignOut";
+import useAuth from "src/hooks/Auth";
+import AuthContext from "src/store/auth-context";
+import type { AuthContextType } from "src/hooks/Auth";
 
 const Header: FC = () => {
   const authContext = useContext<AuthContextType>(AuthContext);
