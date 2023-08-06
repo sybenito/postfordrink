@@ -1,10 +1,12 @@
 import React, { useContext, useState } from "react";
 import type { FC } from "react";
-import { Button, Avatar, Modal } from "antd";
+import type { MenuProps } from 'antd';
+import { Button, Avatar, Modal, Dropdown } from "antd";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import AuthContext from "../../store/auth-context";
-import type { AuthContextType } from "../../hooks/Auth";
+import { UserOutlined } from '@ant-design/icons';
+import AuthContext from "src/store/auth-context";
+import type { AuthContextType } from "src/hooks/Auth";
 
 import "firebaseui/dist/firebaseui.css";
 
@@ -21,18 +23,28 @@ const SignOut: FC = () => {
     setIsLogoutModalVisible(false);
   };
 
+  const items: MenuProps['items'] = [
+    {
+      label: <Button onClick={handleOpenLogoutConfirm}>Sign Out</Button>,
+      key: '0',
+    }
+  ];
+
   return (
     <div className="sign-out">
-      <Button onClick={handleOpenLogoutConfirm}>Sign-out</Button>
-      {user && <Avatar src={user.photoURL} />}
+      <Dropdown  trigger={['click']} placement="bottom" menu={{items}}>
+        <div className="user-avatar">
+      {user ? <Avatar src={user.photoURL} /> : <Avatar size="large" icon={<UserOutlined />} />}
+      </div>
+      </Dropdown>
       <Modal
-        title="Log Out"
+        title="Sign Out"
         open={isLogoutModalVisible}
         onOk={handleLogout}
-        okText="Yes, Log Out"
+        okText="Yes, Sign Me Out"
         onCancel={() => setIsLogoutModalVisible(false)}
       >
-        <p>Are you sure you want to log out?</p>
+        <p>Are you sure you want to sign out?</p>
       </Modal>
     </div>
   );
