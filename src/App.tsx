@@ -1,27 +1,22 @@
-import React, {useMemo} from "react";
+import React, { useMemo } from "react";
 import type { FC } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AuthContext from "src/store/auth-context";
 import useAuth from "src/hooks/Auth";
-import Header from "src/components/Header";
-import SignIn from "src/components/SignIn";
-import PhotoUpload from "src/components/PhotoUpload";
-import QRCodeScanner from "src/components/QrCodeScanner";
 import Error from "src/components/Error";
+import MainLayout from "src/layouts/MainLayout";
+import HomePage from "src/pages/HomePage";
+import RegisteredPage from "src/pages/RegisteredPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <SignIn />,
+    element: <HomePage />,
     errorElement: <Error />,
   },
   {
-    path: "/upload-photo",
-    element: <PhotoUpload />,
-  },
-  {
-    path: "/qr-scanner",
-    element: <QRCodeScanner />,
+    path: "/registered",
+    element: <RegisteredPage />,
   },
 ]);
 
@@ -32,12 +27,11 @@ const App: FC = () => {
   return (
     <div className="App">
       {fb && (
-      <AuthContext.Provider value={authContextMemo}>
-        <Header />
-        <main className="App-header">
-          <RouterProvider router={router} />
-        </main>
-      </AuthContext.Provider>
+        <AuthContext.Provider value={authContextMemo}>
+          <MainLayout>
+            <RouterProvider router={router} />
+          </MainLayout>
+        </AuthContext.Provider>
       )}
     </div>
   );

@@ -3,7 +3,7 @@ import type { FC } from "react";
 import firebase from "firebase/compat/app";
 import * as firebaseui from "firebaseui";
 import "firebase/compat/auth";
-import { isSignInWithEmailLink, signInWithEmailLink, sendSignInLinkToEmail } from "firebase/auth";
+import { sendSignInLinkToEmail } from "firebase/auth";
 import { message } from "antd";
 import RegisterEmail from "src/components/RegisterEmail";
 
@@ -34,35 +34,35 @@ const SignIn: FC = () => {
   const handleEmailRegister = (email: string) => {
     setIsLoading(true);
     sendSignInLinkToEmail(firebase.auth(), email, {
-      url: `${window.location.href}/registered`,
+      url: `${window.location.href}registered`,
       handleCodeInApp: true,
     })
-    .then(() => {
-      window.localStorage.setItem("emailForSignIn", email);
-      authUiMemo.authUi?.reset();
-      setIsEmailRegistrationSent(true);
-    })
-    .catch((e) => {
-      console.error(e);
-      message.error("Error registering your email.  Please contact an administrator.");
-    })
-    .finally(() => {
-      setIsLoading(false);
-    });
-  }
+      .then(() => {
+        window.localStorage.setItem("emailForSignIn", email);
+        authUiMemo.authUi?.reset();
+        setIsEmailRegistrationSent(true);
+      })
+      .catch((e) => {
+        console.error(e);
+        message.error("Error registering your email.  Please contact an administrator.");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   return (
     <div className="sign-in">
-      {!isEmailRegistrationSent ? 
+      {!isEmailRegistrationSent ? (
         <div id="firebaseui-auth-container">
           <h3>Sign In</h3>
-          <RegisterEmail handleSubmit={handleEmailRegister} isLoading={isLoading}/>
-        </div> 
-        :
+          <RegisterEmail handleSubmit={handleEmailRegister} isLoading={isLoading} />
+        </div>
+      ) : (
         <div className="email-registration-sent">
           <p>Check your email to get your sign-in link</p>
-        </div> 
-      }
+        </div>
+      )}
     </div>
   );
 };
