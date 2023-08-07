@@ -19,36 +19,37 @@ const emailValidationRules: Rule[] = [
   },
 ];
 
-
-const RegisterEmail: FC<RegisterEmailProps> = ({handleSubmit, isLoading}) => {
+const RegisterEmail: FC<RegisterEmailProps> = ({ handleSubmit, isLoading }) => {
   const [email, setEmail] = useState<string>("");
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
-  }
+  };
 
   const handleFormSubmit = () => {
     handleSubmit(email);
-  }
+  };
 
   return (
     <div className="register-email">
       <Form onFinish={handleFormSubmit}>
-        <Form.Item
-        label="Email Address"
-        name="email"
-        rules={emailValidationRules}
-        >
-          <Input type="email" placeholder="email@address.com" value={email} onChange={handleEmailChange} disabled={isLoading} />
+        <Form.Item label="Email Address" name="email" rules={emailValidationRules}>
+          <Input
+            type="email"
+            placeholder="email@address.com"
+            value={email}
+            onChange={handleEmailChange}
+            disabled={isLoading}
+          />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={isLoading}>
-            Register
+            Sign In
           </Button>
         </Form.Item>
       </Form>
     </div>
   );
-}
+};
 
 export default RegisterEmail;
