@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import type { FirebaseStorage } from "firebase/storage";
 import type { UploadRequestOption } from "rc-upload/lib/interface";
 import { CameraOutlined } from "@ant-design/icons";
 import { Upload, message } from "antd";
 import ImgCrop from "antd-img-crop";
-import useAuth from "../hooks/Auth";
+import AuthContext from "src/store/auth-context";
+import type { AuthContextType } from "src/hooks/Auth";
 
 const storage: FirebaseStorage = getStorage();
 
 const PhotoUpload = () => {
-  const { fb } = useAuth();
+  const { fb } = useContext<AuthContextType>(AuthContext);
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const handleUpload = (file: UploadRequestOption) => {
