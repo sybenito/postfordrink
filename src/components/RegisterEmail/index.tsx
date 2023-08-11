@@ -1,12 +1,22 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import type { FC } from "react";
 import { Input, Form, Button } from "antd";
 import type { Rule } from "antd/lib/form";
 
 interface RegisterEmailProps {
-  handleSubmit: (email: string) => void;
+  handleSubmit: (registration: RegistrationType) => void;
   isLoading?: boolean;
 }
+
+interface RegistrationType {
+  email: string;
+  name: string;
+}
+
+const registrationInitState: RegistrationType = {
+  email: "",
+  name: "",
+};
 
 const emailValidationRules: Rule[] = [
   {
@@ -19,25 +29,56 @@ const emailValidationRules: Rule[] = [
   },
 ];
 
+const nameValidationRules: Rule[] = [
+  {
+    required: true,
+    message: "Please input your name",
+  },
+];
+
+const emailReducer = (state: RegistrationType, action: { type: string; payload: string }) => {
+  switch (action.type) {
+    case "UPDATE_EMAIL":
+      return { ...state, email: action.payload };
+    case "UPDATE_NAME":
+      return { ...state, name: action.payload };
+    default:
+      return state;
+  }
+};
+
 const RegisterEmail: FC<RegisterEmailProps> = ({ handleSubmit, isLoading }) => {
-  const [email, setEmail] = useState<string>("");
+  const [registration, reduceRegistration] = useReducer(emailReducer, registrationInitState);
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
+    reduceRegistration({ type: "UPDATE_EMAIL", payload: event.target.value });
+  };
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    reduceRegistration({ type: "UPDATE_NAME", payload: event.target.value });
   };
 
   const handleFormSubmit = () => {
-    handleSubmit(email);
+    handleSubmit(registration);
   };
 
   return (
     <div className="register-email">
       <Form onFinish={handleFormSubmit}>
+        <Form.Item label="Name" name="name" rules={nameValidationRules}>
+          <Input
+            type="text"
+            placeholder="Your Name"
+            value={registration.name}
+            onChange={handleNameChange}
+            disabled={isLoading}
+          />
+        </Form.Item>
         <Form.Item label="Email Address" name="email" rules={emailValidationRules}>
           <Input
             type="email"
             placeholder="email@address.com"
-            value={email}
+            value={registration.email}
             onChange={handleEmailChange}
             disabled={isLoading}
           />
@@ -53,3 +94,4 @@ const RegisterEmail: FC<RegisterEmailProps> = ({ handleSubmit, isLoading }) => {
 };
 
 export default RegisterEmail;
+export type { RegistrationType };
