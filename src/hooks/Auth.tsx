@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import { getFirestore, getDoc, doc, setDoc } from "firebase/firestore";
@@ -50,7 +50,7 @@ const useAuth = (): AuthContextType => {
     setDoc(doc(db, "users", newUser.id), newUser);
   };
 
-  const getUser = async (authUser: firebase.User | null) => {
+  const getUser = useCallback(async (authUser: firebase.User | null) => {
     if (authUser) {
       setIsUserLoading(true);
       const db = getFirestore();
@@ -72,7 +72,7 @@ const useAuth = (): AuthContextType => {
       }
       setIsUserLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     setFb(fbInit);
