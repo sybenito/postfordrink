@@ -4,9 +4,8 @@ import { message } from "antd";
 import { getAuth, isSignInWithEmailLink, signInWithEmailLink, updateProfile } from "firebase/auth";
 import RegisterEmail from "src/components/RegisterEmail";
 import type { RegistrationType } from "src/components/RegisterEmail";
-import useUser from "src/hooks/User";
 
-const REDIRECT_SECONDS = 4;
+const REDIRECT_SECONDS = 5;
 const REGISTER_URL = `${window.location.href}registered`;
 
 const auth = getAuth();
@@ -16,32 +15,27 @@ const RegisteredPage: FC = () => {
   const [showEmailInput, setShowEmailInput] = useState<boolean>(false);
   const [isSigningIn, setIsSigningIn] = useState<boolean>(false);
 
-  const { createGuestUser } = useUser();
+  const completeSignIn = useCallback((registration: RegistrationType): void => {
+    setIsSigningIn(true);
+    signInWithEmailLink(auth, registration.email, REGISTER_URL)
+      .then((p) => {
+        console.log("SIGN IN", p);
+        if (auth.currentUser) {
+          updateProfile(auth.currentUser, { displayName: registration.name });
+        }
 
-  const completeSignIn = useCallback(
-    (registration: RegistrationType): void => {
-      setIsSigningIn(true);
-      signInWithEmailLink(auth, registration.email, REGISTER_URL)
-        .then(() => {
-          if (auth.currentUser) {
-            updateProfile(auth.currentUser, { displayName: registration.name });
-            createGuestUser(auth.currentUser.uid, registration.name, registration.email);
-          }
-
-          window.localStorage.removeItem("emailForSignIn");
-          setRedirectCount(REDIRECT_SECONDS);
-          setShowEmailInput(false);
-        })
-        .catch((e) => {
-          console.error(e);
-          message.error("Error signing in with email link.  Please contact an administrator.");
-        })
-        .finally(() => {
-          setIsSigningIn(false);
-        });
-    },
-    [createGuestUser]
-  );
+        window.localStorage.removeItem("emailForSignIn");
+        setRedirectCount(REDIRECT_SECONDS);
+        setShowEmailInput(false);
+      })
+      .catch((e) => {
+        console.error(e);
+        message.error("Error signing in with email link.  Please contact an administrator.");
+      })
+      .finally(() => {
+        setIsSigningIn(false);
+      });
+  }, []);
 
   useEffect(() => {
     // if (redirectCount === 0) setTimeout((): void => window.location.replace("/"), 1500);
