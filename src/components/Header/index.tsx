@@ -14,8 +14,8 @@ const Header: FC = () => {
         <h1>
           <a href="/">Post for Drinks</a>
         </h1>
-        {authContext.isSignedIn && authContext.user?.displayName && (
-          <span className="user-name">&#8212;&nbsp; {authContext.user?.displayName}</span>
+        {authContext.isSignedIn && authContext.user?.name && (
+          <span className="user-name">&#8212;&nbsp; {authContext.user?.name}</span>
         )}
       </div>
       <div className="login-action">{authContext.isSignedIn === true && <SignOut />}</div>

@@ -1,22 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import type { FC } from "react";
 import { message } from "antd";
-import { getAuth, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
+import { getAuth, isSignInWithEmailLink, signInWithEmailLink, updateProfile } from "firebase/auth";
 import RegisterEmail from "src/components/RegisterEmail";
+import type { RegistrationType } from "src/components/RegisterEmail";
 
-const REDIRECT_SECONDS = 4;
-const AUTH = getAuth();
+const REDIRECT_SECONDS = 5;
 const REGISTER_URL = `${window.location.href}registered`;
+
+const auth = getAuth();
 
 const RegisteredPage: FC = () => {
   const [redirectCount, setRedirectCount] = useState<number | null>(null);
   const [showEmailInput, setShowEmailInput] = useState<boolean>(false);
   const [isSigningIn, setIsSigningIn] = useState<boolean>(false);
 
-  const completeSignIn = (email: string): void => {
+  const completeSignIn = useCallback((registration: RegistrationType): void => {
     setIsSigningIn(true);
-    signInWithEmailLink(AUTH, email, REGISTER_URL)
-      .then(() => {
+    signInWithEmailLink(auth, registration.email, REGISTER_URL)
+      .then((p) => {
+        console.log("SIGN IN", p);
+        if (auth.currentUser) {
+          updateProfile(auth.currentUser, { displayName: registration.name });
+        }
+
         window.localStorage.removeItem("emailForSignIn");
         setRedirectCount(REDIRECT_SECONDS);
         setShowEmailInput(false);
@@ -28,12 +35,10 @@ const RegisteredPage: FC = () => {
       .finally(() => {
         setIsSigningIn(false);
       });
-  };
-
-  const handleSubmit = (email: string) => completeSignIn(email);
+  }, []);
 
   useEffect(() => {
-    if (redirectCount === 0) setTimeout((): void => window.location.replace("/"), 2000);
+    // if (redirectCount === 0) setTimeout((): void => window.location.replace("/"), 1500);
     if (redirectCount) {
       const interval = setTimeout((): void => {
         setRedirectCount(redirectCount - 1);
@@ -44,13 +49,14 @@ const RegisteredPage: FC = () => {
   }, [redirectCount]);
 
   useEffect(() => {
-    if (isSignInWithEmailLink(AUTH, REGISTER_URL)) {
-      const email: string | null = window.localStorage.getItem("emailForSignIn");
+    if (isSignInWithEmailLink(auth, REGISTER_URL)) {
+      const emailForSignIn: string | null = window.localStorage.getItem("emailForSignIn");
+      const registration: RegistrationType | null = emailForSignIn ? JSON.parse(emailForSignIn) : null;
 
-      if (email) completeSignIn(email);
+      if (registration) completeSignIn(registration);
       else setShowEmailInput(true);
     }
-  }, []);
+  }, [completeSignIn]);
 
   return (
     <div id="registered">
@@ -67,7 +73,7 @@ const RegisteredPage: FC = () => {
       {showEmailInput && (
         <div className="email-input">
           <h3>Enter your email address to confirm your registration</h3>
-          <RegisterEmail handleSubmit={handleSubmit} isLoading={isSigningIn} />
+          <RegisterEmail handleSubmit={completeSignIn} isLoading={isSigningIn} />
         </div>
       )}
     </div>

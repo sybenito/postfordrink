@@ -21,8 +21,11 @@ const router = createBrowserRouter([
 ]);
 
 const App: FC = () => {
-  const { isSignedIn, user, fb } = useAuth();
-  const authContextMemo = useMemo(() => ({ isSignedIn, user, fb }), [isSignedIn, user, fb]);
+  const { isSignedIn, user, fb, isUserLoading } = useAuth();
+  const authContextMemo = useMemo(
+    () => ({ isSignedIn, user, fb, isUserLoading }),
+    [isSignedIn, user, fb, isUserLoading]
+  );
 
   return (
     <div className="App">

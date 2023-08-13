@@ -6,6 +6,7 @@ import "firebase/compat/auth";
 import { sendSignInLinkToEmail } from "firebase/auth";
 import { message } from "antd";
 import RegisterEmail from "src/components/RegisterEmail";
+import type { RegistrationType } from "src/components/RegisterEmail";
 
 import "firebaseui/dist/firebaseui.css";
 
@@ -31,14 +32,14 @@ const SignIn: FC = () => {
     ui.start("#firebaseui-auth-container", uiConfig);
   }, []);
 
-  const handleEmailRegister = (email: string) => {
+  const handleEmailRegister = (registration: RegistrationType) => {
     setIsLoading(true);
-    sendSignInLinkToEmail(firebase.auth(), email, {
+    sendSignInLinkToEmail(firebase.auth(), registration.email, {
       url: `${window.location.href}registered`,
       handleCodeInApp: true,
     })
       .then(() => {
-        window.localStorage.setItem("emailForSignIn", email);
+        window.localStorage.setItem("emailForSignIn", JSON.stringify(registration));
         authUiMemo.authUi?.reset();
         setIsEmailRegistrationSent(true);
       })
