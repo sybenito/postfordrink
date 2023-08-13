@@ -80,12 +80,11 @@ const useAuth = (): AuthContextType => {
     const authChangeObserver = firebase.auth().onAuthStateChanged((authUser: firebase.User | null) => {
       setIsSignedIn(!!authUser);
       if (authUser) {
-        console.log("SET USER", authUser);
         getUser(authUser);
       }
     });
     return () => authChangeObserver();
-  }, []);
+  }, [getUser]);
 
   return { isSignedIn, user, fb, isUserLoading };
 };

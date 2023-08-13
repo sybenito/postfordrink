@@ -19,7 +19,7 @@ const RegisteredPage: FC = () => {
     setIsSigningIn(true);
     signInWithEmailLink(auth, registration.email, REGISTER_URL)
       .then((p) => {
-        console.log("SIGN IN", p);
+        // console.log("SIGN IN", p);
         if (auth.currentUser) {
           updateProfile(auth.currentUser, { displayName: registration.name });
         }
@@ -38,7 +38,7 @@ const RegisteredPage: FC = () => {
   }, []);
 
   useEffect(() => {
-    // if (redirectCount === 0) setTimeout((): void => window.location.replace("/"), 1500);
+    if (redirectCount === 0) setTimeout((): void => window.location.replace("/"), 1500);
     if (redirectCount) {
       const interval = setTimeout((): void => {
         setRedirectCount(redirectCount - 1);
