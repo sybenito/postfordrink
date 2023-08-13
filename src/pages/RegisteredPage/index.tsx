@@ -18,8 +18,7 @@ const RegisteredPage: FC = () => {
   const completeSignIn = useCallback((registration: RegistrationType): void => {
     setIsSigningIn(true);
     signInWithEmailLink(auth, registration.email, REGISTER_URL)
-      .then((p) => {
-        // console.log("SIGN IN", p);
+      .then(() => {
         if (auth.currentUser) {
           updateProfile(auth.currentUser, { displayName: registration.name });
         }
