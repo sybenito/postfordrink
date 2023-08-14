@@ -7,6 +7,7 @@ import Error from "src/components/Error";
 import MainLayout from "src/layouts/MainLayout";
 import HomePage from "src/pages/HomePage";
 import RegisteredPage from "src/pages/RegisteredPage";
+import PhotoUploadPage from "src/pages/PhotoUploadPage";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: "/registered",
     element: <RegisteredPage />,
+  },
+  {
+    path: "/photo-upload",
+    element: <PhotoUploadPage />,
   },
 ]);
 
