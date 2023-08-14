@@ -16,6 +16,7 @@ const RegisteredPage: FC = () => {
   const [isSigningIn, setIsSigningIn] = useState<boolean>(false);
 
   const completeSignIn = useCallback((registration: RegistrationType): void => {
+    if (auth.currentUser) return;
     setIsSigningIn(true);
     signInWithEmailLink(auth, registration.email, REGISTER_URL)
       .then(() => {
