@@ -1,56 +1,91 @@
 import React, { useState, useContext } from "react";
-import { getStorage, ref, uploadBytesResumable } from "firebase/storage";
-import type { FirebaseStorage } from "firebase/storage";
-import type { UploadRequestOption } from "rc-upload/lib/interface";
+import type { FC } from "react";
+import type { UploadRequestOption, RcFile } from "rc-upload/lib/interface";
 import { CameraOutlined } from "@ant-design/icons";
-import { Upload, message } from "antd";
+import { Upload, Modal } from "antd";
 import ImgCrop from "antd-img-crop";
 import AuthContext from "src/store/auth-context";
 import type { AuthContextType } from "src/hooks/Auth";
+import PhotoUploadAction from "src/components/PhotoUpload/PhotoUploadAction";
+import usePhoto from "src/hooks/Photo";
 
-const storage: FirebaseStorage = getStorage();
+const PhotoUpload: FC = () => {
+  const { fb, user } = useContext<AuthContextType>(AuthContext);
+  const { photoComment, setPhotoComment, uploadPhoto, isUploading, createPhotoMetadata, resetPhotoId } = usePhoto();
 
-const PhotoUpload = () => {
-  const { fb } = useContext<AuthContextType>(AuthContext);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState<boolean>(false);
+  const [photo, setPhoto] = useState<RcFile | string | RcFile | Blob | null>(null);
 
-  const handleUpload = (file: UploadRequestOption) => {
-    const storageRef = ref(storage, "photos/photo.jpg");
-    setIsUploading(true);
-    uploadBytesResumable(storageRef, file.file as Blob)
-      .then(() => {
-        message.success("Photo uploaded!");
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        setIsUploading(false);
-      });
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPhotoComment(e.target.value);
+  };
+
+  const handleUploadPhoto = async (file: RcFile | string | Blob) => {
+    if (user) {
+      await uploadPhoto(file);
+      await createPhotoMetadata(user);
+      setPhoto(null);
+      resetPhotoId();
+    }
+  };
+
+  const handleSelectPhoto = (file: UploadRequestOption) => {
+    setPhoto(file.file);
+  };
+
+  const confirmCancel = () => {
+    setIsCancelModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setPhoto(null);
+    setPhotoComment("");
+    setIsCancelModalVisible(false);
   };
 
   return (
     <div className="main">
       {fb && (
         <div className="photo-upload">
-          <ImgCrop>
-            <Upload
-              name="photo"
-              listType="picture-card"
-              className="photo-uploader"
-              showUploadList={false}
-              accept="image/*"
-              capture="environment"
-              customRequest={handleUpload}
-              maxCount={1}
-              disabled={isUploading}
-            >
-              {!isUploading && <CameraOutlined />}
-              {isUploading && <CameraOutlined spin />}
-            </Upload>
+          <ImgCrop modalClassName="photo-upload-modal" quality={0.7} aspectSlider fillColor="transparent" showReset>
+            {photo ? (
+              <PhotoUploadAction
+                photo={photo}
+                photoComment={photoComment}
+                handleCommentChange={handleCommentChange}
+                handleUploadPhoto={handleUploadPhoto}
+                handleCancel={confirmCancel}
+                isUploading={isUploading}
+              />
+            ) : (
+              <Upload
+                name="photo"
+                listType="picture-card"
+                className="photo-uploader"
+                showUploadList={false}
+                accept="image/*"
+                capture="environment"
+                customRequest={handleSelectPhoto}
+                maxCount={1}
+                disabled={isUploading}
+              >
+                {!isUploading && <CameraOutlined />}
+                {isUploading && <CameraOutlined spin />}
+              </Upload>
+            )}
           </ImgCrop>
         </div>
       )}
+      <Modal
+        title="Cancel Photo Upload"
+        open={isCancelModalVisible}
+        onOk={handleCancel}
+        okText="Yes, Cancel Upload"
+        cancelText="No, Keep This Photo"
+        onCancel={() => setIsCancelModalVisible(false)}
+      >
+        <p>Are you sure you want to cancel this photo upload?</p>
+      </Modal>
     </div>
   );
 };
