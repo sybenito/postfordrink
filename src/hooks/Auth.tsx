@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import { getFirestore, getDoc, doc, setDoc } from "firebase/firestore";
+import { getFirestore, getDoc, doc, setDoc, serverTimestamp, FieldValue } from "firebase/firestore";
 import FIREBASE_CONFIG from "../secrets";
 
 enum UserTypeEnums {
@@ -12,17 +12,19 @@ enum UserTypeEnums {
 
 interface UserType {
   id: string;
+  createdAt?: FieldValue | null;
   name: string;
   email: string;
   photoURL: string;
-  type: UserTypeEnums;
-  tickets: number;
+  type?: UserTypeEnums;
+  tickets?: number;
 }
 
 const BASE_TICKET_AMOUNT = 2;
 
 const userInitState: UserType = {
   id: "",
+  createdAt: null,
   name: "",
   email: "",
   photoURL: "",
@@ -62,6 +64,7 @@ const useAuth = (): AuthContextType => {
         const newUser: UserType = {
           ...userInitState,
           id: authUser.uid,
+          createdAt: serverTimestamp(),
           email: authUser.email || "",
           name: authUser.displayName || "",
           photoURL: authUser.photoURL || "",
