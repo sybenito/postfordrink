@@ -1,36 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import type { FC } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Spin } from "antd";
+import usePhoto from "src/hooks/Photo";
+
+const PHOTO_BASE_URL = "https://firebasestorage.googleapis.com/v0/b/postfordrink.appspot.com/o/photos/";
 
 const PhotoFeed: FC = () => {
-  const photos = [
-    {
-      id: 1,
-      photoUrl: "https://picsum.photos/500",
-    },
-    {
-      id: 2,
-      photoUrl: "https://picsum.photos/500",
-    },
-    {
-      id: 3,
-      photoUrl: "https://picsum.photos/500",
-    },
-  ];
+  const { getPhotos, photos, isPhotoLoading } = usePhoto();
 
-  const renderPhotos: () => JSX.Element[] = () =>
+  const renderPhotos = () =>
     photos.map((photo) => (
       <div className="item" key={photo.id}>
-        <img src={photo.photoUrl} alt={`Feed ${photo.id}`} />
+        <img src={PHOTO_BASE_URL + photo.id} alt={`${photo.comment}`} />
       </div>
     ));
 
+  useEffect(() => {
+    getPhotos();
+  }, [getPhotos]);
+
   return (
     <div className="photo-feed">
-      <InfiniteScroll dataLength={photos.length} next={() => {}} hasMore loader={<Spin />}>
-        {renderPhotos()}
-      </InfiniteScroll>
+      {isPhotoLoading && <Spin />}
+      {!isPhotoLoading && photos.length === 0 && <h1>No photos found.</h1>}
+      {!isPhotoLoading && photos.length > 0 && (
+        <InfiniteScroll dataLength={photos.length} next={() => {}} hasMore loader={<Spin />}>
+          {renderPhotos()}
+        </InfiniteScroll>
+      )}
     </div>
   );
 };
