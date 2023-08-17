@@ -3,7 +3,6 @@ import type { FC } from "react";
 import { getStorage, getDownloadURL, ref, FirebaseStorage } from "firebase/storage";
 import type { DocumentData } from "firebase/firestore";
 import { Spin, Image } from "antd";
-import type { PhotoType } from "src/hooks/Photo";
 
 interface PhotoProps {
   photo: DocumentData;
