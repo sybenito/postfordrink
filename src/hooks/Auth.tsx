@@ -80,13 +80,12 @@ const useAuth = (): AuthContextType => {
   useEffect(() => {
     setFb(fbInit);
 
-    const authChangeObserver = firebase.auth().onAuthStateChanged((authUser: firebase.User | null) => {
+    firebase.auth().onAuthStateChanged((authUser: firebase.User | null) => {
       setIsSignedIn(!!authUser);
       if (authUser) {
         getUser(authUser);
       }
     });
-    return () => authChangeObserver();
   }, [getUser]);
 
   return { isSignedIn, user, fb, isUserLoading };

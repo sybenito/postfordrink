@@ -31,7 +31,6 @@ const App: FC = () => {
     () => ({ isSignedIn, user, fb, isUserLoading }),
     [isSignedIn, user, fb, isUserLoading]
   );
-
   return (
     <div className="App">
       {fb && (

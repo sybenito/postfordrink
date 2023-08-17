@@ -5,6 +5,7 @@ import { getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import type { FirebaseStorage } from "firebase/storage";
 import { getFirestore, doc, setDoc, serverTimestamp, FieldValue, query, collection, getDocs } from "firebase/firestore";
 import { message } from "antd";
+import type { DocumentData } from "firebase/firestore";
 import type { UserType } from "src/hooks/Auth";
 
 enum PhotoStatusEnum {
@@ -30,7 +31,7 @@ const usePhoto = () => {
   const [isPhotoLoading, setIsPhotoLoading] = useState<boolean>(false);
   const [photoComment, setPhotoComment] = useState<string>("");
   const [photoId, setPhotoId] = useState<string>(uuid());
-  const [photos, setPhotos] = useState<PhotoType[]>([]);
+  const [photos, setPhotos] = useState<DocumentData[]>([]);
 
   const getPhotos = useCallback(async () => {
     setIsPhotoLoading(true);
@@ -38,12 +39,8 @@ const usePhoto = () => {
     const db = getFirestore();
     const q = query(collection(db, "posts"));
     const querySnapshot = await getDocs(q);
-    const photoResults: PhotoType[] = [];
-    querySnapshot.forEach((p) => {
-      photoResults.push(p.data() as PhotoType);
-    });
 
-    setPhotos(photoResults);
+    setPhotos(querySnapshot.docs);
     setIsPhotoLoading(false);
   }, []);
 

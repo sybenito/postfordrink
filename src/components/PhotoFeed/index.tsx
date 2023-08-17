@@ -3,18 +3,13 @@ import type { FC } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Spin } from "antd";
 import usePhoto from "src/hooks/Photo";
+import Photo from "src/components/PhotoFeed/Photo";
 
-const PHOTO_BASE_URL = "https://firebasestorage.googleapis.com/v0/b/postfordrink.appspot.com/o/photos/";
+const FEED_IMAGE_WIDTH = 300;
+const PHOTO_BASE_PATH = "photos/";
 
 const PhotoFeed: FC = () => {
   const { getPhotos, photos, isPhotoLoading } = usePhoto();
-
-  const renderPhotos = () =>
-    photos.map((photo) => (
-      <div className="item" key={photo.id}>
-        <img src={PHOTO_BASE_URL + photo.id} alt={`${photo.comment}`} />
-      </div>
-    ));
 
   useEffect(() => {
     getPhotos();
@@ -26,7 +21,12 @@ const PhotoFeed: FC = () => {
       {!isPhotoLoading && photos.length === 0 && <h1>No photos found.</h1>}
       {!isPhotoLoading && photos.length > 0 && (
         <InfiniteScroll dataLength={photos.length} next={() => {}} hasMore loader={<Spin />}>
-          {renderPhotos()}
+          {photos.map((p) => (
+            <div className="item" key={p.id}>
+              <Photo photo={p} width={FEED_IMAGE_WIDTH} path={PHOTO_BASE_PATH} />
+              {p.id}
+            </div>
+          ))}
         </InfiniteScroll>
       )}
     </div>
