@@ -47,7 +47,12 @@ const usePhoto = () => {
   const createPhotoMetadata = useCallback(
     async (user: UserType) => {
       const db = getFirestore();
-      const photoUser: UserType = { id: user.id, name: user.name, email: user.name, photoURL: user.photoURL };
+      const photoUser: UserType = {
+        id: user.id,
+        name: user.name,
+        email: user.name,
+        photoURL: user.photoURL,
+      };
       const photoMetadata: PhotoType = {
         id: photoId,
         createdAt: serverTimestamp(),
