@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import type { FC } from "react";
-import { HomeOutlined, CameraOutlined, FilterOutlined } from "@ant-design/icons";
+import { HomeOutlined, CameraOutlined, RocketOutlined } from "@ant-design/icons";
 import Header from "src/components/Header";
 import MainNav from "src/components/MainNav";
 import type { MainNavItem } from "src/components/MainNav";
@@ -29,7 +29,7 @@ const mainNav: MainNavType = {
     },
     {
       name: "Order",
-      icon: <FilterOutlined />,
+      icon: <RocketOutlined />,
       action: () => navigate("/order"),
     },
   ],
