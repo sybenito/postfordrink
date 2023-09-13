@@ -4,7 +4,7 @@ import "firebase/compat/auth";
 import { getFirestore, getDoc, doc, setDoc, serverTimestamp, FieldValue } from "firebase/firestore";
 import FIREBASE_CONFIG from "../secrets";
 
-enum UserTypeEnums {
+export enum UserTypeEnum {
   HOST = "host",
   GUEST = "guest",
   BAR = "bar",
@@ -16,8 +16,8 @@ interface UserType {
   name: string;
   email: string;
   photoURL: string;
-  type?: UserTypeEnums;
-  tickets?: number;
+  type: UserTypeEnum;
+  tickets: number;
 }
 
 const BASE_TICKET_AMOUNT = 2;
@@ -28,13 +28,13 @@ const userInitState: UserType = {
   name: "",
   email: "",
   photoURL: "",
-  type: UserTypeEnums.GUEST,
+  type: UserTypeEnum.GUEST,
   tickets: BASE_TICKET_AMOUNT,
 };
 
 interface AuthContextType {
   isSignedIn: boolean | null;
-  user: UserType | null;
+  user: UserType;
   fb: firebase.app.App | null;
   isUserLoading: boolean;
 }
@@ -43,7 +43,7 @@ const fbInit: firebase.app.App = firebase.initializeApp(FIREBASE_CONFIG);
 
 const useAuth = (): AuthContextType => {
   const [isSignedIn, setIsSignedIn] = useState<boolean | null>(null);
-  const [user, setUser] = useState<UserType | null>(null);
+  const [user, setUser] = useState<UserType>(userInitState);
   const [fb, setFb] = useState<firebase.app.App | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(false);
 
@@ -92,4 +92,5 @@ const useAuth = (): AuthContextType => {
 };
 
 export default useAuth;
+export { userInitState };
 export type { AuthContextType, UserType };

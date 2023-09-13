@@ -16,9 +16,13 @@ const Photo: FC<PhotoProps> = ({ photo, width, path }) => {
   const [photoURL, setPhotoURL] = useState<string>("");
 
   useEffect(() => {
-    getDownloadURL(ref(storage, path + photo.id)).then((url) => {
-      setPhotoURL(url);
-    });
+    getDownloadURL(ref(storage, path + photo.id))
+      .then((url) => {
+        setPhotoURL(url);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
   }, [photo, path]);
 
   return (

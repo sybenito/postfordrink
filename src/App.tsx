@@ -8,6 +8,7 @@ import MainLayout from "src/layouts/MainLayout";
 import HomePage from "src/pages/HomePage";
 import RegisteredPage from "src/pages/RegisteredPage";
 import PhotoUploadPage from "src/pages/PhotoUploadPage";
+import OrderPage from "src/pages/OrderPage";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: "/photo-upload",
     element: <PhotoUploadPage />,
+  },
+  {
+    path: "/order",
+    element: <OrderPage />,
   },
 ]);
 

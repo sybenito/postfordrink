@@ -15,10 +15,12 @@ enum PhotoStatusEnum {
   DELETED = "deleted",
 }
 
+type PhotoUserType = Omit<UserType, "type" | "tickets">;
+
 interface PhotoType {
   id: string;
   createdAt: FieldValue | null;
-  createdBy: UserType;
+  createdBy: PhotoUserType;
   comment: string;
   status: PhotoStatusEnum;
   likes: string[];
@@ -47,10 +49,10 @@ const usePhoto = () => {
   const createPhotoMetadata = useCallback(
     async (user: UserType) => {
       const db = getFirestore();
-      const photoUser: UserType = {
+      const photoUser: PhotoUserType = {
         id: user.id,
         name: user.name,
-        email: user.name,
+        email: user.email,
         photoURL: user.photoURL,
       };
       const photoMetadata: PhotoType = {
