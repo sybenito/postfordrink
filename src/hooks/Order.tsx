@@ -1,6 +1,4 @@
-import React, { useState, useCallback, useReducer, useContext } from "react";
-import { getStorage, ref, uploadBytesResumable } from "firebase/storage";
-import type { FirebaseStorage } from "firebase/storage";
+import React, { useState, useCallback, useReducer, useContext, useEffect } from "react";
 import { getFirestore, doc, setDoc, serverTimestamp, FieldValue, query, collection, getDocs } from "firebase/firestore";
 import type { QueryDocumentSnapshot } from "firebase/firestore";
 import { message } from "antd";
@@ -25,91 +23,108 @@ interface GarnishType {
 
 type OrderUserType = Omit<UserType, "type" | "tickets">;
 
+interface DrinkType {
+  alcohol: AlcoholType | null;
+  mixer: MixerType[];
+  garnish: GarnishType[];
+  double: boolean;
+  request: string;
+}
+
 interface OrderType {
   createdBy: OrderUserType;
   createdAt: FieldValue | null;
-  request: string;
-  order: string[][];
+  drinks: DrinkType[];
 }
 
-const reduceAlcoholFn = (state: AlcoholType[], action: { type: string; payload: QueryDocumentSnapshot }) => {
-  const alcohol: AlcoholType = {
-    id: action.payload.id,
-    name: action.payload.data().name,
-    canDouble: action.payload.data().canDouble,
-  };
+const initOrder: OrderType = {
+  createdBy: {
+    id: "",
+    name: "",
+    email: "",
+    photoURL: "",
+  },
+  createdAt: null,
+  drinks: [],
+};
 
+const reduceOrder = (state: OrderType, action: { type: string; payload: DrinkType | number }) => {
   switch (action.type) {
     case "ADD":
-      return [...state, alcohol];
+      state.drinks.push(action.payload as DrinkType);
+      return state;
     case "REMOVE":
-      return state.filter((a) => a.id !== action.payload.id);
+      state.drinks.splice(action.payload as number, 1);
+      return state;
     default:
       return state;
   }
 };
 
-const reduceMixerGarnishFn = (
-  state: MixerType[] | GarnishType[],
-  action: { type: string; payload: QueryDocumentSnapshot }
-) => {
-  const mixerGarnish: MixerType | GarnishType = {
-    id: action.payload.id,
-    name: action.payload.data().name,
-  };
-
-  switch (action.type) {
-    case "ADD":
-      return [...state, mixerGarnish];
-    case "REMOVE":
-      return state.filter((a) => a.id !== action.payload.id);
-    default:
-      return state;
-  }
-};
-
-const storage: FirebaseStorage = getStorage();
-
-const usePhoto = () => {
+const useOrder = () => {
   const { user } = useContext(AuthContext);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(false);
-  const [alcohol, reduceAlcohol] = useReducer(reduceAlcoholFn, []);
-  const [mixer, reduceMixer] = useReducer(reduceMixerGarnishFn, []);
-  const [garnish, reduceGarnish] = useReducer(reduceMixerGarnishFn, []);
-  const [order, setOrder] = useState<OrderType[]>([]);
+  const [alcohol, setAlcohol] = useState<AlcoholType[]>([]);
+  const [mixer, setMixer] = useState<MixerType[]>([]);
+  const [garnish, setGarnish] = useState<GarnishType[]>([]);
+  const [order, dispatchOrder] = useReducer(reduceOrder, initOrder);
 
   const getAlcohol = useCallback(async () => {
     const db = getFirestore();
     const q = query(collection(db, "alcohol_type"));
     const querySnapshot = await getDocs(q);
+    const alcoholList: AlcoholType[] = [];
 
     querySnapshot.docs.forEach((d) => {
-      reduceAlcohol({ type: "ADD", payload: d });
+      const newAlcohol: AlcoholType = {
+        id: d.id,
+        name: d.data().name,
+        canDouble: d.data().can_double,
+      };
+
+      alcoholList.push(newAlcohol);
     });
+
+    setAlcohol(alcoholList);
   }, []);
 
   const getMixer = useCallback(async () => {
     const db = getFirestore();
     const q = query(collection(db, "mixer_type"));
     const querySnapshot = await getDocs(q);
+    const mixerList: MixerType[] = [];
 
     querySnapshot.docs.forEach((d) => {
-      reduceMixer({ type: "ADD", payload: d });
+      const newMixer: MixerType = {
+        id: d.id,
+        name: d.data().name,
+      };
+      mixerList.push(newMixer);
     });
+
+    setMixer(mixerList);
   }, []);
 
   const getGarnish = useCallback(async () => {
     const db = getFirestore();
     const q = query(collection(db, "garnish_type"));
     const querySnapshot = await getDocs(q);
+    const garnishList: GarnishType[] = [];
 
     querySnapshot.docs.forEach((d) => {
-      reduceGarnish({ type: "ADD", payload: d });
+      const newGarnish: GarnishType = {
+        id: d.id,
+        name: d.data().name,
+      };
+      garnishList.push(newGarnish);
     });
+
+    setGarnish(garnishList);
   }, []);
 
-  return { getAlcohol, getMixer, getGarnish, alcohol, mixer, garnish, order };
+  return { getAlcohol, getMixer, getGarnish, dispatchOrder, alcohol, mixer, garnish, order };
 };
 
-export default usePhoto;
+export default useOrder;
+export type { DrinkType, AlcoholType, MixerType, GarnishType, OrderType };
