@@ -1,5 +1,16 @@
 import React, { useState, useCallback, useReducer, useContext, useEffect } from "react";
-import { getFirestore, doc, setDoc, serverTimestamp, FieldValue, query, collection, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp,
+  FieldValue,
+  query,
+  collection,
+  getDocs,
+  where,
+  limit,
+} from "firebase/firestore";
 import type { QueryDocumentSnapshot } from "firebase/firestore";
 import { message } from "antd";
 import type { UserType } from "src/hooks/Auth";
@@ -35,27 +46,19 @@ interface OrderType {
   createdBy: OrderUserType;
   createdAt: FieldValue | null;
   drinks: DrinkType[];
+  status: "pending" | "completed";
 }
 
-const initOrder: OrderType = {
-  createdBy: {
-    id: "",
-    name: "",
-    email: "",
-    photoURL: "",
-  },
-  createdAt: null,
-  drinks: [],
-};
-
-const reduceOrder = (state: OrderType, action: { type: string; payload: DrinkType | number }) => {
+const reduceOrder = (state: DrinkType[], action: { type: string; payload: DrinkType | number | null }) => {
   switch (action.type) {
-    case "ADD":
-      state.drinks.push(action.payload as DrinkType);
-      return state;
-    case "REMOVE":
-      state.drinks.splice(action.payload as number, 1);
-      return state;
+    case "ADD_DRINK":
+      state.push(action.payload as DrinkType);
+      return [...state];
+    case "REMOVE_DRINK":
+      state.splice(action.payload as number, 1);
+      return [...state];
+    case "RESET_ORDER":
+      return [];
     default:
       return state;
   }
@@ -64,11 +67,43 @@ const reduceOrder = (state: OrderType, action: { type: string; payload: DrinkTyp
 const useOrder = () => {
   const { user } = useContext(AuthContext);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isOrderLoading, setIsOrderLoading] = useState<boolean>(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(false);
   const [alcohol, setAlcohol] = useState<AlcoholType[]>([]);
   const [mixer, setMixer] = useState<MixerType[]>([]);
   const [garnish, setGarnish] = useState<GarnishType[]>([]);
-  const [order, dispatchOrder] = useReducer(reduceOrder, initOrder);
+  const [order, dispatchOrder] = useReducer(reduceOrder, []);
+  const [ticketsPending, setTicketsPending] = useState<number>(0);
+  const [qrCode, setQrCode] = useState<string | null>(null);
+
+  const getExistingOrder = useCallback(async () => {
+    const db = getFirestore();
+    const q = query(
+      collection(db, "orders"),
+      where("createdBy.id", "==", user.id),
+      where("status", "==", "pending"),
+      limit(1)
+    );
+
+    try {
+      setIsOrderLoading(true);
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.docs.length === 0) return;
+
+      dispatchOrder({ type: "RESET_ORDER", payload: null });
+
+      const orderDrinks = querySnapshot.docs[0].data().drinks;
+      orderDrinks.forEach((d: DrinkType) => {
+        dispatchOrder({ type: "ADD_DRINK", payload: d });
+      });
+
+      setQrCode(querySnapshot.docs[0].id);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsOrderLoading(false);
+    }
+  }, [user]);
 
   const getAlcohol = useCallback(async () => {
     const db = getFirestore();
@@ -123,7 +158,58 @@ const useOrder = () => {
     setGarnish(garnishList);
   }, []);
 
-  return { getAlcohol, getMixer, getGarnish, dispatchOrder, alcohol, mixer, garnish, order };
+  const saveOrder = useCallback(async () => {
+    const db = getFirestore();
+    const orderRef = doc(db, "orders", user.id);
+    const newOrder: OrderType = {
+      createdBy: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        photoURL: user.photoURL,
+      },
+      createdAt: serverTimestamp(),
+      drinks: order,
+      status: "pending",
+    };
+
+    try {
+      setIsSaving(true);
+      await setDoc(orderRef, newOrder);
+      message.success("Head over to the bar!", 5);
+    } catch (e) {
+      message.error("There was an issue completing the order. Please contact the host.", 5);
+      console.error(e);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [order, user]);
+
+  useEffect(() => {
+    let ticketsTotal = 0;
+    order.forEach((drink: DrinkType) => {
+      if (drink.double === true) ticketsTotal += 2;
+      else ticketsTotal += 1;
+    });
+    setTicketsPending(ticketsTotal);
+  }, [order]);
+
+  return {
+    getAlcohol,
+    getMixer,
+    getGarnish,
+    dispatchOrder,
+    saveOrder,
+    getExistingOrder,
+    alcohol,
+    mixer,
+    garnish,
+    order,
+    ticketsPending,
+    qrCode,
+    isSaving,
+    isOrderLoading,
+  };
 };
 
 export default useOrder;

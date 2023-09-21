@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useMemo, useReducer } from "react";
 import type { FC } from "react";
 import { Button, Select, Input, Form, Checkbox } from "antd";
 import type { SelectProps } from "antd";
-import useOrder from "src/hooks/Order";
 import type { ValidationRules } from "src/models/form";
 import AuthContext from "src/store/auth-context";
 import type { DrinkType, AlcoholType, MixerType, GarnishType } from "src/hooks/Order";
@@ -21,12 +20,16 @@ const initDrink: DrinkType = {
 };
 
 const MAX_ALCOHOL = 2;
+
 interface DrinkFormProps {
   submitDrink: (drink: DrinkType) => void;
+  alcohol: AlcoholType[];
+  mixer: MixerType[];
+  garnish: GarnishType[];
+  ticketsPending: number;
 }
 
-const DrinkForm: FC<DrinkFormProps> = ({ submitDrink }) => {
-  const { getAlcohol, getMixer, getGarnish, alcohol, mixer, garnish } = useOrder();
+const DrinkForm: FC<DrinkFormProps> = ({ submitDrink, alcohol, mixer, garnish, ticketsPending }) => {
   const { user } = useContext(AuthContext);
 
   const reduceDrink = (
@@ -71,12 +74,8 @@ const DrinkForm: FC<DrinkFormProps> = ({ submitDrink }) => {
 
   const [drink, dispatchDrink] = useReducer(reduceDrink, initDrink);
 
-  const alcoholMemo = useMemo(() => alcohol, [alcohol]);
-  const mixerMemo = useMemo(() => mixer, [mixer]);
-  const garnishMemo = useMemo(() => garnish, [garnish]);
-
   const alcoholOptions = () => {
-    const options: SelectProps["options"] = alcoholMemo.map((a) => ({
+    const options: SelectProps["options"] = alcohol.map((a) => ({
       label: a.name,
       value: a.id,
     }));
@@ -86,32 +85,26 @@ const DrinkForm: FC<DrinkFormProps> = ({ submitDrink }) => {
 
   const mixerOptions = useMemo(
     (): SelectProps["options"] =>
-      mixerMemo.map((a) => ({
+      mixer.map((a) => ({
         label: a.name,
         value: a.id,
       })),
-    [mixerMemo]
+    [mixer]
   );
 
   const garnishOptions = useMemo(
     (): SelectProps["options"] =>
-      garnishMemo.map((a) => ({
+      garnish.map((a) => ({
         label: a.name,
         value: a.id,
       })),
-    [garnishMemo]
+    [garnish]
   );
 
   const handleSubmit = () => {
     submitDrink(drink);
     dispatchDrink({ type: "RESET", payload: null });
   };
-
-  useEffect(() => {
-    if (alcoholMemo.length === 0) getAlcohol();
-    if (mixerMemo.length === 0) getMixer();
-    if (garnishMemo.length === 0) getGarnish();
-  }, []);
 
   return (
     <Form name="orderDrink" layout="vertical" onFinish={handleSubmit}>
@@ -125,13 +118,14 @@ const DrinkForm: FC<DrinkFormProps> = ({ submitDrink }) => {
           }}
         />
       </Form.Item>
-      {user.tickets >= 2 && drink.alcohol && drink.alcohol.canDouble === true && (
+      {drink.alcohol && drink.alcohol.canDouble === true && (
         <Form.Item name="double" rules={[validationRules.optional]}>
           <Checkbox
             checked={drink.double}
             onChange={(e) => {
               dispatchDrink({ type: "SET_DOUBLE", payload: e.target.checked });
             }}
+            disabled={user.tickets >= 2 && user.tickets - ticketsPending < 2}
           >
             Make it a Double
           </Checkbox>
