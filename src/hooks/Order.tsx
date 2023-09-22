@@ -2,7 +2,7 @@ import React, { useState, useCallback, useReducer, useContext, useEffect } from 
 import {
   getFirestore,
   doc,
-  setDoc,
+  addDoc,
   serverTimestamp,
   FieldValue,
   query,
@@ -10,8 +10,9 @@ import {
   getDocs,
   where,
   limit,
+  updateDoc,
+  orderBy,
 } from "firebase/firestore";
-import type { QueryDocumentSnapshot } from "firebase/firestore";
 import { message } from "antd";
 import type { UserType } from "src/hooks/Auth";
 import AuthContext from "src/store/auth-context";
@@ -46,7 +47,7 @@ interface OrderType {
   createdBy: OrderUserType;
   createdAt: FieldValue | null;
   drinks: DrinkType[];
-  status: "pending" | "completed";
+  status: "pending" | "completed" | "cancelled";
 }
 
 const reduceOrder = (state: DrinkType[], action: { type: string; payload: DrinkType | number | null }) => {
@@ -69,98 +70,153 @@ const useOrder = () => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isOrderLoading, setIsOrderLoading] = useState<boolean>(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(false);
+  const [orderHistory, setOrderHistory] = useState<OrderType[]>([]);
   const [alcohol, setAlcohol] = useState<AlcoholType[]>([]);
   const [mixer, setMixer] = useState<MixerType[]>([]);
   const [garnish, setGarnish] = useState<GarnishType[]>([]);
   const [order, dispatchOrder] = useReducer(reduceOrder, []);
   const [ticketsPending, setTicketsPending] = useState<number>(0);
-  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [orderId, setOrderId] = useState<string | null>(null);
 
-  const getExistingOrder = useCallback(async () => {
+  const getExistingOrder = useCallback(() => {
     const db = getFirestore();
-    const q = query(
+    const orderQuery = query(
       collection(db, "orders"),
       where("createdBy.id", "==", user.id),
       where("status", "==", "pending"),
       limit(1)
     );
 
-    try {
-      setIsOrderLoading(true);
-      const querySnapshot = await getDocs(q);
-      if (querySnapshot.docs.length === 0) return;
+    setIsOrderLoading(true);
+    getDocs(orderQuery)
+      .then((snapshot) => {
+        if (snapshot.docs.length === 0) return;
 
-      dispatchOrder({ type: "RESET_ORDER", payload: null });
+        dispatchOrder({ type: "RESET_ORDER", payload: null });
 
-      const orderDrinks = querySnapshot.docs[0].data().drinks;
-      orderDrinks.forEach((d: DrinkType) => {
-        dispatchOrder({ type: "ADD_DRINK", payload: d });
+        const orderDrinks = snapshot.docs[0].data().drinks;
+        orderDrinks.forEach((d: DrinkType) => {
+          dispatchOrder({ type: "ADD_DRINK", payload: d });
+        });
+
+        setOrderId(snapshot.docs[0].id);
+      })
+      .catch((e) => {
+        console.error(e);
+      })
+      .finally(() => {
+        setIsOrderLoading(false);
       });
-
-      setQrCode(querySnapshot.docs[0].id);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsOrderLoading(false);
-    }
   }, [user]);
 
-  const getAlcohol = useCallback(async () => {
+  const getOrderHistory = useCallback(() => {
     const db = getFirestore();
-    const q = query(collection(db, "alcohol_type"));
-    const querySnapshot = await getDocs(q);
+    const historyQuery = query(
+      collection(db, "orders"),
+      where("createdBy.id", "==", user.id),
+      where("status", "==", "completed"),
+      orderBy("createdAt", "desc")
+    );
+
+    setIsHistoryLoading(true);
+    getDocs(historyQuery)
+      .then((snapshot) => {
+        snapshot.docs.forEach((d) => {
+          setOrderHistory((state) => [...state, d.data() as OrderType]);
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+      })
+      .finally(() => {
+        setIsHistoryLoading(false);
+      });
+  }, [user]);
+
+  const cancelOrderLoaded = useCallback(() => {
+    const db = getFirestore();
+    const orderRef = doc(db, "orders", orderId as string);
+    const updatedStatus = { status: "cancelled" };
+
+    setIsSaving(true);
+    updateDoc(orderRef, updatedStatus)
+      .then(() => {
+        message.success("Order cancelled!", 5);
+        setIsSaving(false);
+        setOrderId(null);
+        dispatchOrder({ type: "RESET_ORDER", payload: null });
+      })
+      .catch((e) => {
+        message.error("There was an issue cancelling the order. Please contact the host.", 5);
+        console.error(e);
+      });
+  }, [order, user, orderId]);
+
+  const getAlcohol = useCallback(() => {
+    const db = getFirestore();
+    const alcoholQuery = query(collection(db, "alcohol_type"));
     const alcoholList: AlcoholType[] = [];
 
-    querySnapshot.docs.forEach((d) => {
-      const newAlcohol: AlcoholType = {
-        id: d.id,
-        name: d.data().name,
-        canDouble: d.data().can_double,
-      };
+    getDocs(alcoholQuery)
+      .then((snapshot) => {
+        snapshot.docs.forEach((d) => {
+          const newAlcohol: AlcoholType = {
+            id: d.id,
+            name: d.data().name,
+            canDouble: d.data().can_double,
+          };
 
-      alcoholList.push(newAlcohol);
-    });
+          alcoholList.push(newAlcohol);
+        });
 
-    setAlcohol(alcoholList);
+        setAlcohol(alcoholList);
+      })
+      .catch((e) => console.error(e));
   }, []);
 
-  const getMixer = useCallback(async () => {
+  const getMixer = useCallback(() => {
     const db = getFirestore();
-    const q = query(collection(db, "mixer_type"));
-    const querySnapshot = await getDocs(q);
+    const mixerQuery = query(collection(db, "mixer_type"));
     const mixerList: MixerType[] = [];
 
-    querySnapshot.docs.forEach((d) => {
-      const newMixer: MixerType = {
-        id: d.id,
-        name: d.data().name,
-      };
-      mixerList.push(newMixer);
-    });
+    getDocs(mixerQuery)
+      .then((snapshot) => {
+        snapshot.docs.forEach((d) => {
+          const newMixer: MixerType = {
+            id: d.id,
+            name: d.data().name,
+          };
+          mixerList.push(newMixer);
+        });
 
-    setMixer(mixerList);
+        setMixer(mixerList);
+      })
+      .catch((e) => console.error(e));
   }, []);
 
-  const getGarnish = useCallback(async () => {
+  const getGarnish = useCallback(() => {
     const db = getFirestore();
-    const q = query(collection(db, "garnish_type"));
-    const querySnapshot = await getDocs(q);
+    const garnishQuery = query(collection(db, "garnish_type"));
     const garnishList: GarnishType[] = [];
 
-    querySnapshot.docs.forEach((d) => {
-      const newGarnish: GarnishType = {
-        id: d.id,
-        name: d.data().name,
-      };
-      garnishList.push(newGarnish);
-    });
+    getDocs(garnishQuery)
+      .then((snapshot) => {
+        snapshot.docs.forEach((d) => {
+          const newGarnish: GarnishType = {
+            id: d.id,
+            name: d.data().name,
+          };
+          garnishList.push(newGarnish);
+        });
 
-    setGarnish(garnishList);
+        setGarnish(garnishList);
+      })
+      .catch((e) => console.error(e));
   }, []);
 
-  const saveOrder = useCallback(async () => {
+  const saveOrder = useCallback(() => {
     const db = getFirestore();
-    const orderRef = doc(db, "orders", user.id);
+    const collectionRef = collection(db, "orders");
     const newOrder: OrderType = {
       createdBy: {
         id: user.id,
@@ -173,16 +229,19 @@ const useOrder = () => {
       status: "pending",
     };
 
-    try {
-      setIsSaving(true);
-      await setDoc(orderRef, newOrder);
-      message.success("Head over to the bar!", 5);
-    } catch (e) {
-      message.error("There was an issue completing the order. Please contact the host.", 5);
-      console.error(e);
-    } finally {
-      setIsSaving(false);
-    }
+    setIsSaving(true);
+
+    addDoc(collectionRef, newOrder)
+      .then((docRef) => {
+        setOrderId(docRef.id);
+      })
+      .catch((e) => {
+        message.error("There was an issue completing the order. Please contact the host.", 5);
+        console.error(e);
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   }, [order, user]);
 
   useEffect(() => {
@@ -201,14 +260,18 @@ const useOrder = () => {
     dispatchOrder,
     saveOrder,
     getExistingOrder,
+    getOrderHistory,
+    cancelOrderLoaded,
     alcohol,
     mixer,
     garnish,
     order,
     ticketsPending,
-    qrCode,
+    orderId,
+    orderHistory,
     isSaving,
     isOrderLoading,
+    isHistoryLoading,
   };
 };
 

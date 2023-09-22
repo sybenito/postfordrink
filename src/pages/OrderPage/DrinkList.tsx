@@ -3,6 +3,7 @@ import type { FC } from "react";
 import { v4 as uuid } from "uuid";
 import { Button } from "antd";
 import type { DrinkType } from "src/hooks/Order";
+import Drink from "src/pages/OrderPage/Drink";
 
 interface DrinkListProps {
   order: DrinkType[];
@@ -14,13 +15,7 @@ const DrinkList: FC<DrinkListProps> = ({ order, removeAction, showAction }) => (
   <div className="drink-list">
     {order.map((drink, i) => (
       <div key={uuid()} className="order-item">
-        <div className="order-item-alcohol">
-          {drink.double ? "double " : ""}
-          {drink.alcohol?.name}
-        </div>
-        <div className="order-item-mixer">{drink.mixer.map((m) => m.name).join(" + ")}</div>
-        <div className="order-item-garnish">{drink.garnish.map((g) => g.name).join(" + ")}</div>
-        <div className="order-item-request">{drink.request}</div>
+        <Drink drink={drink} />
         {showAction && <Button onClick={() => removeAction(i)}>Remove</Button>}
       </div>
     ))}
