@@ -4,6 +4,7 @@ import { Spin } from "antd";
 import SignIn from "src/components/SignIn";
 import AuthContext from "src/store/auth-context";
 import PhotoFeed from "src/components/PhotoFeed";
+import MainNav from "src/components/MainNav";
 
 const HomePage: FC = () => {
   const { isSignedIn } = React.useContext(AuthContext);
@@ -18,6 +19,7 @@ const HomePage: FC = () => {
       )}
       {isSignedIn === false && <SignIn />}
       {isSignedIn === null && <Spin />}
+      <MainNav />
     </div>
   );
 };
