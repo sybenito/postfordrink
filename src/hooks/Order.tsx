@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useReducer, useContext, useEffect } from "react";
+import { useState, useCallback, useReducer, useContext, useEffect } from "react";
 import {
   getFirestore,
   doc,
@@ -150,7 +150,7 @@ const useOrder = () => {
         message.error("There was an issue cancelling the order. Please contact the host.", 5);
         console.error(e);
       });
-  }, [order, user, orderId]);
+  }, [orderId]);
 
   const getAlcohol = useCallback(() => {
     const db = getFirestore();

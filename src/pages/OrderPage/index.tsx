@@ -9,6 +9,7 @@ import type { DrinkType } from "src/hooks/Order";
 import DrinkForm from "src/components/DrinkForm";
 import DrinkList from "src/pages/OrderPage/DrinkList";
 import OrderHistory from "src/pages/OrderPage/OrderHistory";
+import useAuthProtect from "src/hooks/AuthProtect";
 
 const OrderPage: FC = () => {
   const { user } = useContext(AuthContext);
@@ -38,6 +39,8 @@ const OrderPage: FC = () => {
   const alcoholMemo = useMemo(() => alcohol, [alcohol]);
   const mixerMemo = useMemo(() => mixer, [mixer]);
   const garnishMemo = useMemo(() => garnish, [garnish]);
+
+  useAuthProtect().validateAuth();
 
   const handleSubmitDrink = (drink: DrinkType) => {
     dispatchOrder({ type: "ADD_DRINK", payload: drink });

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useReducer } from "react";
+import React, { useContext, useMemo, useReducer } from "react";
 import type { FC } from "react";
 import { Button, Select, Input, Form, Checkbox } from "antd";
 import type { SelectProps } from "antd";
@@ -19,8 +19,6 @@ const initDrink: DrinkType = {
   request: "",
 };
 
-const MAX_ALCOHOL = 2;
-
 interface DrinkFormProps {
   submitDrink: (drink: DrinkType) => void;
   alcohol: AlcoholType[];
@@ -36,7 +34,7 @@ const DrinkForm: FC<DrinkFormProps> = ({ submitDrink, alcohol, mixer, garnish, t
     state: DrinkType,
     action: { type: string; payload: string | string[] | boolean | null }
   ): DrinkType => {
-    const setAlcohol = (s: DrinkType, payload: string | null) => {
+    const setAlcohol = (s: DrinkType) => {
       const alcoholObj = alcohol.find((a) => a.id === action.payload);
       if (alcoholObj && !alcoholObj.canDouble) {
         return { ...s, alcohol: alcoholObj as AlcoholType, double: false };
@@ -56,7 +54,7 @@ const DrinkForm: FC<DrinkFormProps> = ({ submitDrink, alcohol, mixer, garnish, t
 
     switch (action.type) {
       case "SET_ALCOHOL":
-        return setAlcohol(state, action.payload as string);
+        return setAlcohol(state);
       case "SET_MIXER":
         return setMixer(state, action.payload as string[]);
       case "SET_GARNISH":
