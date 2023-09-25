@@ -12,7 +12,7 @@ const Header: FC = () => {
     <header className="app-header">
       <div className="logo">
         <h1>
-          <a href="/">Learn Firebase</a>
+          <a href="/">FireFace</a>
         </h1>
         {authContext.isSignedIn && authContext.user?.name && (
           <span className="user-name">&#8212;&nbsp; {authContext.user?.name}</span>

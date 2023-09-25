@@ -55,6 +55,13 @@ const MainNav: FC = () => {
         action: () => navigate("/"),
       },
     ],
+    [UserTypeEnum.DEFAULT]: [
+      {
+        name: "Home",
+        icon: <HomeOutlined />,
+        action: () => navigate("/"),
+      },
+    ],
   };
   const nav = mainNav[user.type];
   const renderNav = () => nav.map((item) => <FloatButton key={item.name} icon={item.icon} onClick={item.action} />);

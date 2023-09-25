@@ -8,6 +8,7 @@ export enum UserTypeEnum {
   HOST = "host",
   GUEST = "guest",
   BAR = "bar",
+  DEFAULT = "default",
 }
 
 interface UserType {
@@ -28,7 +29,7 @@ const userInitState: UserType = {
   name: "",
   email: "",
   photoURL: "",
-  type: UserTypeEnum.GUEST,
+  type: UserTypeEnum.DEFAULT,
   tickets: BASE_TICKET_AMOUNT,
 };
 
