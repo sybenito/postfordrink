@@ -7,8 +7,8 @@ import Drink from "src/pages/OrderPage/Drink";
 
 interface DrinkListProps {
   order: DrinkType[];
-  removeAction: (index: number) => void;
-  showAction: boolean;
+  removeAction?: (index: number) => void;
+  showAction?: boolean;
 }
 
 const DrinkList: FC<DrinkListProps> = ({ order, removeAction, showAction }) => (
@@ -16,7 +16,7 @@ const DrinkList: FC<DrinkListProps> = ({ order, removeAction, showAction }) => (
     {order.map((drink, i) => (
       <div key={uuid()} className="order-item">
         <Drink drink={drink} />
-        {showAction && <Button onClick={() => removeAction(i)}>Remove</Button>}
+        {showAction && removeAction && <Button onClick={() => removeAction(i)}>Remove</Button>}
       </div>
     ))}
   </div>
