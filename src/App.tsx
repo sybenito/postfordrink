@@ -48,6 +48,10 @@ const userRoutes: UserRoutesType = {
       element: <BartenderPage />,
     },
     {
+      path: "/registered",
+      element: <RegisteredPage />,
+    },
+    {
       path: "*",
       element: <Error />,
     },
@@ -59,6 +63,10 @@ const userRoutes: UserRoutesType = {
       errorElement: <Error />,
     },
     {
+      path: "/registered",
+      element: <RegisteredPage />,
+    },
+    {
       path: "*",
       element: <Error />,
     },
@@ -68,6 +76,10 @@ const userRoutes: UserRoutesType = {
       path: "/",
       element: <HomePage />,
       errorElement: <Error />,
+    },
+    {
+      path: "/registered",
+      element: <RegisteredPage />,
     },
     {
       path: "*",
