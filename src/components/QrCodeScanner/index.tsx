@@ -1,24 +1,31 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { BrowserMultiFormatReader, Result } from '@zxing/library';
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import type { FC } from "react";
+import { BrowserMultiFormatReader, Result } from "@zxing/library";
 
-const QRCodeScanner: React.FC = () => {
-  const [scanResult, setScanResult] = useState<string| null>(null);
+interface QRCodeScannerProps {
+  scanResultAction: (result: string) => void;
+}
+
+const QRCodeScanner: FC<QRCodeScannerProps> = ({ scanResultAction }) => {
   const [isCameraSupported, setIsCameraSupported] = useState<boolean>(true);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
 
-  const handleScanResult = (result: Result) => {
-    if (result) {
-      // Handle the scanned QR code result here
-      setScanResult(result.getText());
-    }
-  };
+  const handleScanResult = useCallback(
+    (result: Result) => {
+      if (result) {
+        // Handle the scanned QR code result here
+        scanResultAction(result.getText());
+      }
+    },
+    [scanResultAction]
+  );
 
   useEffect(() => {
     const startScanner = async () => {
       try {
         const codeReader: BrowserMultiFormatReader = new BrowserMultiFormatReader();
-        const facingMode = { exact: 'environment' }; // Use 'environment' for the back camera
+        const facingMode = { exact: "environment" }; // Use 'environment' for the back camera
         const mediaStream: MediaStream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode },
         });
@@ -27,7 +34,8 @@ const QRCodeScanner: React.FC = () => {
           codeReaderRef.current = codeReader;
 
           // Start the scanner when the component mounts
-          await codeReaderRef.current.decodeFromVideoElement(videoRef.current)
+          await codeReaderRef.current
+            .decodeFromVideoElement(videoRef.current)
             .then((result) => {
               handleScanResult(result);
               setIsCameraSupported(true);
@@ -37,7 +45,6 @@ const QRCodeScanner: React.FC = () => {
               console.error("Error decoding video element", e);
             });
         }
-        
       } catch (e) {
         setIsCameraSupported(false);
       }
@@ -50,14 +57,16 @@ const QRCodeScanner: React.FC = () => {
         codeReaderRef.current.reset();
       }
     };
-  }, []);
+  }, [handleScanResult]);
 
   return (
     <div className="qr-scanner">
-      {!isCameraSupported && (<p>Scanner not supported on this device</p>)}
-      {isCameraSupported && !scanResult && (<video ref={videoRef} autoPlay playsInline><track kind="captions" /></video>)}
-      {scanResult && <p>{scanResult}</p>}
-
+      {!isCameraSupported && <p>Scanner not supported on this device</p>}
+      {isCameraSupported && (
+        <video ref={videoRef} autoPlay playsInline>
+          <track kind="captions" />
+        </video>
+      )}
     </div>
   );
 };

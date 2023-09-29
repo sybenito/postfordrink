@@ -8,6 +8,7 @@ import {
   query,
   collection,
   getDocs,
+  getDoc,
   where,
   limit,
   updateDoc,
@@ -48,6 +49,7 @@ interface OrderType {
   createdAt: FieldValue | null;
   drinks: DrinkType[];
   status: "pending" | "completed" | "cancelled";
+  completedBy?: OrderUserType;
 }
 
 const reduceOrder = (state: DrinkType[], action: { type: string; payload: DrinkType | number | null }) => {
@@ -75,6 +77,7 @@ const useOrder = () => {
   const [mixer, setMixer] = useState<MixerType[]>([]);
   const [garnish, setGarnish] = useState<GarnishType[]>([]);
   const [order, dispatchOrder] = useReducer(reduceOrder, []);
+  const [orderLoaded, setOrderLoaded] = useState<OrderType | null>(null);
   const [ticketsPending, setTicketsPending] = useState<number>(0);
   const [orderId, setOrderId] = useState<string | null>(null);
 
@@ -109,6 +112,29 @@ const useOrder = () => {
       });
   }, [user]);
 
+  const getOrderById = useCallback(() => {
+    const db = getFirestore();
+    const docRef = doc(db, "orders", orderId as string);
+
+    setIsOrderLoading(true);
+    getDoc(docRef)
+      .then((snapshot) => {
+        if (!snapshot.exists()) {
+          message.error("Order does not exist", 3);
+          setOrderId(null);
+          return;
+        }
+        const orderData = snapshot.data() as OrderType;
+        setOrderLoaded(orderData);
+      })
+      .catch((e) => {
+        console.error(e);
+      })
+      .finally(() => {
+        setIsOrderLoading(false);
+      });
+  }, [orderId]);
+
   const getOrderHistory = useCallback(() => {
     const db = getFirestore();
     const historyQuery = query(
@@ -132,6 +158,33 @@ const useOrder = () => {
         setIsHistoryLoading(false);
       });
   }, [user]);
+
+  const completeOrderLoaded = useCallback(() => {
+    const db = getFirestore();
+    const orderRef = doc(db, "orders", orderId as string);
+    const updatedStatus = {
+      status: "completed",
+      completedBy: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        photoURL: user.photoURL,
+      },
+    };
+
+    setIsSaving(true);
+    updateDoc(orderRef, updatedStatus)
+      .then(() => {
+        message.success("Order completed", 3);
+        setIsSaving(false);
+        setOrderId(null);
+        setOrderLoaded(null);
+      })
+      .catch((e) => {
+        message.error("There was an issue completing the order. Please contact the host.", 5);
+        console.error(e);
+      });
+  }, [orderId, user]);
 
   const cancelOrderLoaded = useCallback(() => {
     const db = getFirestore();
@@ -262,10 +315,15 @@ const useOrder = () => {
     getExistingOrder,
     getOrderHistory,
     cancelOrderLoaded,
+    getOrderById,
+    setOrderId,
+    setOrderLoaded,
+    completeOrderLoaded,
     alcohol,
     mixer,
     garnish,
     order,
+    orderLoaded,
     ticketsPending,
     orderId,
     orderHistory,
