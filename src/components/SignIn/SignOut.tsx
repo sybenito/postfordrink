@@ -21,6 +21,7 @@ const SignOut: FC = () => {
   const handleLogout = () => {
     firebase.auth().signOut();
     setIsLogoutModalVisible(false);
+    document.location.href = "/";
   };
 
   const items: MenuProps["items"] = [
