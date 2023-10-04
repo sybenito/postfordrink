@@ -13,6 +13,7 @@ import {
   limit,
   updateDoc,
   orderBy,
+  onSnapshot,
 } from "firebase/firestore";
 import { message } from "antd";
 import type { UserType } from "src/hooks/Auth";
@@ -97,12 +98,25 @@ const useOrder = () => {
 
         dispatchOrder({ type: "RESET_ORDER", payload: null });
 
-        const orderDrinks = snapshot.docs[0].data().drinks;
-        orderDrinks.forEach((d: DrinkType) => {
+        const orderSnapshot = snapshot.docs[0].data() as OrderType;
+        orderSnapshot.drinks.forEach((d: DrinkType) => {
           dispatchOrder({ type: "ADD_DRINK", payload: d });
         });
 
         setOrderId(snapshot.docs[0].id);
+
+        const docRef = doc(db, "orders", snapshot.docs[0].id as string);
+        onSnapshot(docRef, (os) => {
+          if (os.exists()) {
+            const orderData = os.data() as OrderType;
+            if (orderData.completedBy) {
+              setOrderLoaded(orderData);
+              message.success(`Order take by ${orderData.completedBy.name}`, 3);
+            }
+          }
+        });
+
+        setOrderLoaded(orderSnapshot);
       })
       .catch((e) => {
         console.error(e);
@@ -112,12 +126,21 @@ const useOrder = () => {
       });
   }, [user]);
 
-  const getOrderById = useCallback(() => {
+  const getOrderById = useCallback(async () => {
     const db = getFirestore();
     const docRef = doc(db, "orders", orderId as string);
+    const updatedViewer = {
+      completedBy: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        photoURL: user.photoURL,
+      },
+    };
 
     setIsOrderLoading(true);
-    getDoc(docRef)
+    await updateDoc(docRef, updatedViewer);
+    await getDoc(docRef)
       .then((snapshot) => {
         if (!snapshot.exists()) {
           message.error("Order does not exist", 3);
@@ -133,7 +156,7 @@ const useOrder = () => {
       .finally(() => {
         setIsOrderLoading(false);
       });
-  }, [orderId]);
+  }, [orderId, user]);
 
   const getOrderHistory = useCallback(() => {
     const db = getFirestore();
@@ -161,19 +184,13 @@ const useOrder = () => {
 
   const completeOrderLoaded = useCallback(() => {
     const db = getFirestore();
-    const orderRef = doc(db, "orders", orderId as string);
+    const docRef = doc(db, "orders", orderId as string);
     const updatedStatus = {
       status: "completed",
-      completedBy: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        photoURL: user.photoURL,
-      },
     };
 
     setIsSaving(true);
-    updateDoc(orderRef, updatedStatus)
+    updateDoc(docRef, updatedStatus)
       .then(() => {
         message.success("Order completed", 3);
         setIsSaving(false);
@@ -184,15 +201,15 @@ const useOrder = () => {
         message.error("There was an issue completing the order. Please contact the host.", 5);
         console.error(e);
       });
-  }, [orderId, user]);
+  }, [orderId]);
 
   const cancelOrderLoaded = useCallback(() => {
     const db = getFirestore();
-    const orderRef = doc(db, "orders", orderId as string);
+    const docRef = doc(db, "orders", orderId as string);
     const updatedStatus = { status: "cancelled" };
 
     setIsSaving(true);
-    updateDoc(orderRef, updatedStatus)
+    updateDoc(docRef, updatedStatus)
       .then(() => {
         message.success("Order cancelled!", 5);
         setIsSaving(false);
