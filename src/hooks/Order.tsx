@@ -112,12 +112,18 @@ const useOrder = () => {
             const orderData = os.data() as OrderType;
 
             if (orderData.completedBy) {
-              setOrderLoaded(orderData);
-
-              message.success(`Order taken by ${orderData.completedBy.name}`, 3);
+              if (orderData.status === "completed") {
+                setOrderId(null);
+                setOrderLoaded(null);
+                dispatchOrder({ type: "RESET_ORDER", payload: null });
+                message.success("Order completed", 3);
+              } else {
+                setOrderLoaded(orderData);
+                message.success(`Order taken by ${orderData.completedBy.name}`, 3);
+              }
 
               if (navigator.vibrate) {
-                navigator.vibrate(50);
+                navigator.vibrate(100);
               }
             }
           }
