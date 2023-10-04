@@ -125,6 +125,8 @@ const useOrder = () => {
               if (navigator.vibrate) {
                 navigator.vibrate(100);
               }
+            } else {
+              setOrderLoaded(orderData);
             }
           }
         });
