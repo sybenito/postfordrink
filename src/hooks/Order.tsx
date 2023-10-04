@@ -82,8 +82,9 @@ const useOrder = () => {
   const [ticketsPending, setTicketsPending] = useState<number>(0);
   const [orderId, setOrderId] = useState<string | null>(null);
 
+  const db = getFirestore();
+
   const getExistingOrder = useCallback(() => {
-    const db = getFirestore();
     const orderQuery = query(
       collection(db, "orders"),
       where("createdBy.id", "==", user.id),
@@ -113,7 +114,7 @@ const useOrder = () => {
             if (orderData.completedBy) {
               setOrderLoaded(orderData);
 
-              message.success(`Order take by ${orderData.completedBy.name}`, 3);
+              message.success(`Order taken by ${orderData.completedBy.name}`, 3);
 
               if (navigator.vibrate) {
                 navigator.vibrate(50);
@@ -130,10 +131,9 @@ const useOrder = () => {
       .finally(() => {
         setIsOrderLoading(false);
       });
-  }, [user]);
+  }, [user, db]);
 
   const getOrderById = useCallback(async () => {
-    const db = getFirestore();
     const docRef = doc(db, "orders", orderId as string);
     const updatedViewer = {
       completedBy: {
@@ -162,10 +162,9 @@ const useOrder = () => {
       .finally(() => {
         setIsOrderLoading(false);
       });
-  }, [orderId, user]);
+  }, [orderId, user, db]);
 
   const getOrderHistory = useCallback(() => {
-    const db = getFirestore();
     const historyQuery = query(
       collection(db, "orders"),
       where("createdBy.id", "==", user.id),
@@ -186,10 +185,9 @@ const useOrder = () => {
       .finally(() => {
         setIsHistoryLoading(false);
       });
-  }, [user]);
+  }, [user, db]);
 
   const completeOrderLoaded = useCallback(() => {
-    const db = getFirestore();
     const docRef = doc(db, "orders", orderId as string);
     const updatedStatus = {
       status: "completed",
@@ -207,10 +205,19 @@ const useOrder = () => {
         message.error("There was an issue completing the order. Please contact the host.", 5);
         console.error(e);
       });
-  }, [orderId]);
+  }, [orderId, db]);
 
-  const cancelOrderLoaded = useCallback(() => {
-    const db = getFirestore();
+  const cancelOrderLoaded = useCallback(async () => {
+    const docRef = doc(db, "orders", orderId as string);
+    const updatedStatus = { completedBy: null };
+
+    await updateDoc(docRef, updatedStatus);
+
+    setOrderId(null);
+    setOrderLoaded(null);
+  }, [orderId, db]);
+
+  const cancelOrder = useCallback(() => {
     const docRef = doc(db, "orders", orderId as string);
     const updatedStatus = { status: "cancelled" };
 
@@ -226,10 +233,9 @@ const useOrder = () => {
         message.error("There was an issue cancelling the order. Please contact the host.", 5);
         console.error(e);
       });
-  }, [orderId]);
+  }, [orderId, db]);
 
   const getAlcohol = useCallback(() => {
-    const db = getFirestore();
     const alcoholQuery = query(collection(db, "alcohol_type"));
     const alcoholList: AlcoholType[] = [];
 
@@ -248,10 +254,9 @@ const useOrder = () => {
         setAlcohol(alcoholList);
       })
       .catch((e) => console.error(e));
-  }, []);
+  }, [db]);
 
   const getMixer = useCallback(() => {
-    const db = getFirestore();
     const mixerQuery = query(collection(db, "mixer_type"));
     const mixerList: MixerType[] = [];
 
@@ -268,10 +273,9 @@ const useOrder = () => {
         setMixer(mixerList);
       })
       .catch((e) => console.error(e));
-  }, []);
+  }, [db]);
 
   const getGarnish = useCallback(() => {
-    const db = getFirestore();
     const garnishQuery = query(collection(db, "garnish_type"));
     const garnishList: GarnishType[] = [];
 
@@ -288,10 +292,9 @@ const useOrder = () => {
         setGarnish(garnishList);
       })
       .catch((e) => console.error(e));
-  }, []);
+  }, [db]);
 
   const saveOrder = useCallback(() => {
-    const db = getFirestore();
     const collectionRef = collection(db, "orders");
     const newOrder: OrderType = {
       createdBy: {
@@ -318,7 +321,7 @@ const useOrder = () => {
       .finally(() => {
         setIsSaving(false);
       });
-  }, [order, user]);
+  }, [order, user, db]);
 
   useEffect(() => {
     let ticketsTotal = 0;
@@ -337,11 +340,12 @@ const useOrder = () => {
     saveOrder,
     getExistingOrder,
     getOrderHistory,
-    cancelOrderLoaded,
+    cancelOrder,
     getOrderById,
     setOrderId,
     setOrderLoaded,
     completeOrderLoaded,
+    cancelOrderLoaded,
     alcohol,
     mixer,
     garnish,

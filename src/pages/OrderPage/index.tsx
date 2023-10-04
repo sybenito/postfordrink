@@ -22,7 +22,7 @@ const OrderPage: FC = () => {
     saveOrder,
     getExistingOrder,
     getOrderHistory,
-    cancelOrderLoaded,
+    cancelOrder,
     alcohol,
     mixer,
     garnish,
@@ -77,7 +77,7 @@ const OrderPage: FC = () => {
       content: "Are you sure you want to cancel this order?",
       okText: "Yes, Cancel",
       cancelText: "No",
-      onOk: cancelOrderLoaded,
+      onOk: cancelOrder,
     });
   };
 

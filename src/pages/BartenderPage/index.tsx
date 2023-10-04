@@ -10,7 +10,7 @@ import DrinkList from "src/pages/OrderPage/DrinkList";
 const BartenderPage: FC = () => {
   useAuthProtect().validateAuth();
   const { user } = useContext(AuthContext);
-  const { getOrderById, setOrderId, setOrderLoaded, completeOrderLoaded, orderId, orderLoaded } = useOrder();
+  const { getOrderById, setOrderId, completeOrderLoaded, cancelOrderLoaded, orderId, orderLoaded } = useOrder();
 
   const handleScanResult = (result: string) => {
     setOrderId(result);
@@ -27,10 +27,7 @@ const BartenderPage: FC = () => {
     Modal.confirm({
       title: "Cancel This Order?",
       content: "This guest will be able to re-scan the order QR code.",
-      onOk: () => {
-        setOrderId(null);
-        setOrderLoaded(null);
-      },
+      onOk: () => cancelOrderLoaded,
     });
   };
 
