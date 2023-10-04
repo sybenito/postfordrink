@@ -27,7 +27,7 @@ const BartenderPage: FC = () => {
     Modal.confirm({
       title: "Cancel This Order?",
       content: "This guest will be able to re-scan the order QR code.",
-      onOk: () => cancelOrderLoaded,
+      onOk: cancelOrderLoaded,
     });
   };
 
