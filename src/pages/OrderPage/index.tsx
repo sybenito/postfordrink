@@ -3,11 +3,10 @@ import type { FC } from "react";
 import { Divider, Button, Drawer, Modal, Spin, message } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, doc, onSnapshot } from "firebase/firestore";
 import AuthContext from "src/store/auth-context";
 import useOrder from "src/hooks/Order";
 import MainNav from "src/components/MainNav";
-import type { DrinkType, OrderType } from "src/hooks/Order";
+import type { DrinkType } from "src/hooks/Order";
 import DrinkForm from "src/components/DrinkForm";
 import DrinkList from "src/pages/OrderPage/DrinkList";
 import OrderHistory from "src/pages/OrderPage/OrderHistory";
@@ -24,7 +23,6 @@ const OrderPage: FC = () => {
     getExistingOrder,
     getOrderHistory,
     cancelOrderLoaded,
-    setOrderLoaded,
     alcohol,
     mixer,
     garnish,
