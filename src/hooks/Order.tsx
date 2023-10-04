@@ -109,9 +109,15 @@ const useOrder = () => {
         onSnapshot(docRef, (os) => {
           if (os.exists()) {
             const orderData = os.data() as OrderType;
+
             if (orderData.completedBy) {
               setOrderLoaded(orderData);
+
               message.success(`Order take by ${orderData.completedBy.name}`, 3);
+
+              if (navigator.vibrate) {
+                navigator.vibrate(50);
+              }
             }
           }
         });
