@@ -207,14 +207,19 @@ const useOrder = () => {
       });
   }, [orderId, db]);
 
-  const cancelOrderLoaded = useCallback(async () => {
+  const cancelOrderLoaded = useCallback(() => {
     const docRef = doc(db, "orders", orderId as string);
     const updatedStatus = { completedBy: null };
 
-    await updateDoc(docRef, updatedStatus);
-
-    setOrderId(null);
-    setOrderLoaded(null);
+    updateDoc(docRef, updatedStatus)
+      .then(() => {
+        setOrderId(null);
+        setOrderLoaded(null);
+      })
+      .catch((e) => {
+        message.error("There was an issue cancelling the order. Please contact the host.", 5);
+        console.error(e);
+      });
   }, [orderId, db]);
 
   const cancelOrder = useCallback(() => {
