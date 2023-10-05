@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import type { FC } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Spin } from "antd";
 import AuthContext from "src/store/auth-context";
 import useAuth, { UserTypeEnum } from "src/hooks/Auth";
 import Error from "src/components/Error";
@@ -80,6 +81,14 @@ const userRoutes: UserRoutesType = {
     {
       path: "/registered",
       element: <RegisteredPage />,
+    },
+    {
+      path: "/photo-upload",
+      element: <Spin />,
+    },
+    {
+      path: "/order",
+      element: <Spin />,
     },
     {
       path: "*",
