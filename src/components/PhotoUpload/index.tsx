@@ -22,10 +22,14 @@ const PhotoUpload: FC = () => {
 
   const handleUploadPhoto = async (file: RcFile | string | Blob) => {
     if (user) {
-      await uploadPhoto(file);
-      await createPhotoMetadata(user);
-      setPhoto(null);
-      resetPhotoId();
+      try {
+        await uploadPhoto(file);
+        await createPhotoMetadata(user);
+        setPhoto(null);
+        resetPhotoId();
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 

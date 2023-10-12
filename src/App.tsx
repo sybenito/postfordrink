@@ -12,6 +12,8 @@ import PhotoUploadPage from "src/pages/PhotoUploadPage";
 import OrderPage from "src/pages/OrderPage";
 import BartenderPage from "src/pages/BartenderPage";
 
+import "src/styles/App.scss";
+
 type UserRoutesType = {
   [key in UserTypeEnum]: {
     path: string;

@@ -5,8 +5,10 @@ import { Spin } from "antd";
 import usePhoto from "src/hooks/Photo";
 import Photo from "src/components/PhotoFeed/Photo";
 
-const FEED_IMAGE_WIDTH = 300;
-const PHOTO_BASE_PATH = "photos/";
+import "src/components/PhotoFeed/index.scss";
+
+const PHOTO_BASE_PATH = "photos/resized/450/";
+const PHOTO_POSTFIX = "_450x450";
 
 const PhotoFeed: FC = () => {
   const { getPhotos, photos, isPhotoLoading } = usePhoto();
@@ -23,8 +25,7 @@ const PhotoFeed: FC = () => {
         <InfiniteScroll dataLength={photos.length} next={() => {}} hasMore loader={<Spin />}>
           {photos.map((p) => (
             <div className="item" key={p.id}>
-              <Photo photo={p} width={FEED_IMAGE_WIDTH} path={PHOTO_BASE_PATH} />
-              {p.id}
+              <Photo photo={p} path={PHOTO_BASE_PATH} postfix={PHOTO_POSTFIX} />
             </div>
           ))}
         </InfiniteScroll>
