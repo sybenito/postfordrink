@@ -1,0 +1,41 @@
+@use "src/styles/variables" as *;
+
+.photo-feed {
+  display: flex;
+  justify-content: center;
+  .item {
+    margin-bottom: $gutter-lg;
+    display: flex;
+    width: 400px;
+    flex-wrap: wrap;
+    padding: 10px;
+    .meta {
+      margin-bottom: $gutter-sm;
+      .owner {
+        font-size: $font-size-lg;
+        font-weight: $font-weight-bold;
+      }
+    }
+    .photo {
+      margin-bottom: $gutter-sm;
+      width: 100%;
+      .ant-image {
+        border-radius: $border-radius;
+        box-shadow: $box-shadow-2;
+        overflow: hidden;
+        width: 100%;
+        height: auto;
+      }
+    }
+    .actions {
+      cursor: pointer;
+      height: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      .anticon {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
