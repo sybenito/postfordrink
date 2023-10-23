@@ -3,7 +3,18 @@ import type { RcFile } from "rc-upload/lib/interface";
 import { v4 as uuid } from "uuid";
 import { getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import type { FirebaseStorage } from "firebase/storage";
-import { getFirestore, doc, setDoc, serverTimestamp, FieldValue, query, collection, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp,
+  FieldValue,
+  query,
+  collection,
+  updateDoc,
+  onSnapshot,
+  orderBy,
+} from "firebase/firestore";
 import { message } from "antd";
 import type { DocumentData } from "firebase/firestore";
 import type { UserType } from "src/hooks/Auth";
@@ -34,21 +45,21 @@ const usePhoto = () => {
   const [photoComment, setPhotoComment] = useState<string>("");
   const [photoId, setPhotoId] = useState<string>(uuid());
   const [photos, setPhotos] = useState<DocumentData[]>([]);
+  const db = getFirestore();
 
   const getPhotos = useCallback(async () => {
     setIsPhotoLoading(true);
 
-    const db = getFirestore();
-    const q = query(collection(db, "posts"));
-    const querySnapshot = await getDocs(q);
+    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
 
-    setPhotos(querySnapshot.docs);
-    setIsPhotoLoading(false);
-  }, []);
+    onSnapshot(q, (querySnapshot) => {
+      setPhotos(querySnapshot.docs);
+      setIsPhotoLoading(false);
+    });
+  }, [db]);
 
   const createPhotoMetadata = useCallback(
     async (user: UserType) => {
-      const db = getFirestore();
       const photoUser: PhotoUserType = {
         id: user.id,
         name: user.name,
@@ -65,7 +76,7 @@ const usePhoto = () => {
       };
       setDoc(doc(db, "posts", photoId), photoMetadata).catch((e) => console.error(e));
     },
-    [photoId, photoComment]
+    [photoId, photoComment, db]
   );
 
   const uploadPhoto = useCallback(
@@ -88,6 +99,26 @@ const usePhoto = () => {
     [photoId]
   );
 
+  const toggleLike = useCallback(
+    async (photo: DocumentData, userId: string) => {
+      const photoRef = doc(db, "posts", photo.id);
+      const photoData: PhotoType = photo.data();
+      const { likes } = photoData;
+      const likeIndex = likes.indexOf(userId);
+
+      if (likeIndex === -1) {
+        likes.push(userId);
+      } else {
+        likes.splice(likeIndex, 1);
+      }
+
+      return updateDoc(photoRef, { likes })
+        .then(() => likes)
+        .catch((e) => console.error(e));
+    },
+    [db]
+  );
+
   const resetPhotoId = () => {
     setPhotoId(uuid());
   };
@@ -100,6 +131,7 @@ const usePhoto = () => {
     createPhotoMetadata,
     resetPhotoId,
     getPhotos,
+    toggleLike,
     photos,
     isPhotoLoading,
   };
