@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const useClasses = (initClasses = []) => {
+const useClasses = (initClasses: string[] = []) => {
   const [classes, setClasses] = useState<string[]>(initClasses);
 
   const addClass = (newClass: string) => {
@@ -15,9 +15,7 @@ const useClasses = (initClasses = []) => {
     }
   };
 
-  const getClasses = () => {
-    return classes.join(" ");
-  };
+  const getClasses = () => classes.join(" ");
 
   return { addClass, removeClass, getClasses };
 };
