@@ -28,7 +28,7 @@ const PhotoUpload: FC = () => {
         setPhoto(null);
         resetPhotoId();
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     }
   };
