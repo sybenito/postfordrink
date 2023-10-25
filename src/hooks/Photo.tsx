@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type { RcFile } from "rc-upload/lib/interface";
 import { v4 as uuid } from "uuid";
 import { getStorage, ref, uploadBytesResumable } from "firebase/storage";
@@ -7,6 +7,7 @@ import {
   getFirestore,
   doc,
   setDoc,
+  getDocs,
   serverTimestamp,
   FieldValue,
   query,
@@ -45,17 +46,24 @@ const usePhoto = () => {
   const [photoComment, setPhotoComment] = useState<string>("");
   const [photoId, setPhotoId] = useState<string>(uuid());
   const [photos, setPhotos] = useState<DocumentData[]>([]);
+  const [haveNewPhotos, setHaveNewPhotos] = useState<boolean>(false);
   const db = getFirestore();
 
   const getPhotos = useCallback(async () => {
+    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
     setIsPhotoLoading(true);
 
-    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-
-    onSnapshot(q, (querySnapshot) => {
-      setPhotos(querySnapshot.docs);
-      setIsPhotoLoading(false);
-    });
+    getDocs(q)
+      .then((querySnapshot) => {
+        setPhotos(querySnapshot.docs);
+      })
+      .catch((e) => {
+        console.error(e);
+      })
+      .finally(() => {
+        setIsPhotoLoading(false);
+        setHaveNewPhotos(false);
+      });
   }, [db]);
 
   const createPhotoMetadata = useCallback(
@@ -123,6 +131,13 @@ const usePhoto = () => {
     setPhotoId(uuid());
   };
 
+  useEffect(() => {
+    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (querySnapshot) => {
+      if (querySnapshot.docs.length > photos.length && photos.length > 0) setHaveNewPhotos(true);
+    });
+  }, [photos, db]);
+
   return {
     photoComment,
     setPhotoComment,
@@ -132,6 +147,7 @@ const usePhoto = () => {
     resetPhotoId,
     getPhotos,
     toggleLike,
+    haveNewPhotos,
     photos,
     isPhotoLoading,
   };
