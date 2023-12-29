@@ -24,8 +24,6 @@
 }
 
 .photo-feed {
-  display: flex;
-  justify-content: center;
   .item {
     margin-bottom: $gutter-lg;
     display: flex;
@@ -34,49 +32,33 @@
     padding: 10px;
     .meta {
       margin-bottom: $gutter-sm;
-      .owner {
-        font-size: $font-size-lg;
-        font-weight: $font-weight-bold;
-      }
-    }
-    .photo {
-      margin-bottom: $gutter-sm;
-      width: 100%;
-      .ant-image {
-        border-radius: $border-radius;
-        box-shadow: $box-shadow-2;
-        overflow: hidden;
-        width: 100%;
-        height: auto;
-      }
-    }
-    .actions {
-      cursor: pointer;
-      height: 1.2rem;
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      .anticon {
-        font-size: 1.2rem;
-        &.like {
-          animation: orangeToRedAnimation 1.5s ease-in infinite;
-        }
-        &.liked {
-          color: $red;
-        }
-        &.liking {
-          animation: rotate-left-to-right 0.5s linear infinite;
-          color: $orange;
-        }
-      }
     }
   }
   .feed-end {
     text-align: center;
+    margin-bottom: $gutter-lg;
   }
   .feed-loader {
     display: flex;
     justify-content: center;
     margin-bottom: $gutter-lg;
+  }
+  .new-photos-action {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 1000;
+    top: 100px;
+    .ant-btn {
+      border-radius: 1.2rem;
+      font-weight: $font-weight-bold;
+      display: flex;
+      align-items: center;
+      padding: 1.2rem;
+      .anticon {
+        font-size: 1.2rem;
+        font-weight: $font-weight-bold;
+      }
+    }
   }
 }

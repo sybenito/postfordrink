@@ -5,6 +5,8 @@ import { Button, Divider } from "antd";
 import type { OrderType, DrinkType } from "src/hooks/Order";
 import Drink from "src/pages/OrderPage/Drink";
 
+import "./OrderHistory.scss";
+
 interface OrderHistoryProps {
   orderHistory: OrderType[];
   reorderAction: (drink: DrinkType) => void;

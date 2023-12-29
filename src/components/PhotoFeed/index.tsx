@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { FC } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Spin, Button } from "antd";
+import { Spin, Button, Affix, Empty } from "antd";
 import { NotificationOutlined } from "@ant-design/icons";
 import { DocumentData } from "firebase/firestore";
 import usePhoto from "src/hooks/Photo";
@@ -39,21 +39,18 @@ const PhotoFeed: FC = () => {
   return (
     <div className="photo-feed">
       {isPhotoLoading && <Spin />}
-      {!isPhotoLoading && photosLoaded.length === 0 && <h1>No photos found.</h1>}
+      {!isPhotoLoading && photosLoaded.length === 0 && <Empty description={false} />}
       {!isPhotoLoading && photosLoaded.length > 0 && (
         <>
           {haveNewPhotos && (
             <div className="new-photos-action">
-              <Button onClick={getPhotos} icon={<NotificationOutlined />}>
-                New Photos!
-              </Button>
+              <Affix offsetTop={10} offsetBottom={10}>
+                <Button onClick={getPhotos} icon={<NotificationOutlined />}>
+                  New Photos!
+                </Button>
+              </Affix>
             </div>
           )}
-          <div className="new-photos-action">
-            <Button onClick={getPhotos} icon={<NotificationOutlined />}>
-              New Photos!
-            </Button>
-          </div>
           <div className="feed-container">
             <InfiniteScroll
               dataLength={SCROLL_DATA_LENGTH}
@@ -64,7 +61,7 @@ const PhotoFeed: FC = () => {
                   <Button onClick={fetchMorePhotos}>Load More ...</Button>
                 </div>
               }
-              endMessage={<p className="feed-end">Thats it! Thats all.</p>}
+              endMessage={<h3 className="feed-end">Thats it! Thats all.</h3>}
             >
               {photosLoaded.map((p) => (
                 <div className="item" key={p.id}>

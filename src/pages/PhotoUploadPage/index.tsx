@@ -8,7 +8,7 @@ const PhotoUploadPage: FC = () => {
   useAuthProtect().validateAuth();
 
   return (
-    <div className="photo-upload">
+    <div className="photo-upload-page">
       <PhotoUpload />
       <MainNav />
     </div>

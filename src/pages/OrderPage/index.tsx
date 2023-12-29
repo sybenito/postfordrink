@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useMemo } from "react";
 import type { FC } from "react";
 import { Divider, Button, Drawer, Modal, Spin, message } from "antd";
-import { CheckCircleFilled } from "@ant-design/icons";
+import { CheckCircleFilled, HistoryOutlined, PlusOutlined, RocketOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "src/store/auth-context";
 import useOrder from "src/hooks/Order";
@@ -11,6 +11,8 @@ import DrinkForm from "src/components/DrinkForm";
 import DrinkList from "src/pages/OrderPage/DrinkList";
 import OrderHistory from "src/pages/OrderPage/OrderHistory";
 import useAuthProtect from "src/hooks/AuthProtect";
+
+import "./index.scss";
 
 const OrderPage: FC = () => {
   const { user } = useContext(AuthContext);
@@ -36,6 +38,7 @@ const OrderPage: FC = () => {
     orderLoaded,
   } = useOrder();
   const [showOrderDrawer, setShowOrderDrawer] = useState(false);
+  const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
   const routerNav = useNavigate();
 
   const alcoholMemo = useMemo(() => alcohol, [alcohol]);
@@ -46,10 +49,6 @@ const OrderPage: FC = () => {
 
   const handleSubmitDrink = (drink: DrinkType) => {
     dispatchOrder({ type: "ADD_DRINK", payload: drink });
-    setShowOrderDrawer(false);
-  };
-
-  const handleCloseOrderDrawer = () => {
     setShowOrderDrawer(false);
   };
 
@@ -100,23 +99,39 @@ const OrderPage: FC = () => {
   return (
     <div className="order-page">
       <div className="header">
-        <h1>{user.tickets - ticketsPending ?? 0} Drink Creds</h1>
+        <h1>Join Us For a Drink!</h1>
+        <p>Complete your order, then scan your QR code at the bar.</p>
+        <p>Be sure to post more photos to get more drink passes.</p>
       </div>
       <div className="virtual-hostess">
         <Divider>
-          <h2>Virtual Hostess</h2>
+          <h2>
+            <strong>{user.tickets - ticketsPending ?? "No"}</strong> Drink Passes
+          </h2>
         </Divider>
         {isOrderLoading && <Spin />}
         {!isOrderLoading && !orderId && (
-          <Button
-            type="primary"
-            onClick={() => {
-              setShowOrderDrawer(true);
-            }}
-            disabled={user.tickets === 0 || (user.tickets > 0 && ticketsPending >= user.tickets)}
-          >
-            + Create a Drink
-          </Button>
+          <div className="order-actions">
+            <Button
+              type="primary"
+              onClick={() => {
+                setShowOrderDrawer(true);
+              }}
+              disabled={user.tickets === 0 || (user.tickets > 0 && ticketsPending >= user.tickets)}
+            >
+              <PlusOutlined />
+              <RocketOutlined />
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                setShowHistoryDrawer(true);
+              }}
+            >
+              <PlusOutlined />
+              <HistoryOutlined />
+            </Button>
+          </div>
         )}
         {!isOrderLoading && orderId && (
           <div className="qr-code">
@@ -127,18 +142,18 @@ const OrderPage: FC = () => {
         )}
         {user.tickets === 0 && (
           <div className="no-tickets">
-            <p>Upload more photos to get more drink creds.</p>
+            <p>Upload more photos to get more drink passes.</p>
             <Button onClick={() => routerNav("/photo-upload")}>Upload Photos</Button>
           </div>
         )}
         <DrinkList order={order} removeAction={handleRemoveDrink} showAction={!orderId} />
         {order.length > 0 && !orderId && (
           <div className="order-actions">
-            <Button type="primary" size="large" onClick={handleCompleteOrder} loading={isSaving}>
-              Complete Order
-            </Button>
             <Button size="large" onClick={handleCancelOrder} loading={isSaving}>
               Cancel Order
+            </Button>
+            <Button type="primary" size="large" onClick={handleCompleteOrder} loading={isSaving}>
+              Complete Order
             </Button>
           </div>
         )}
@@ -150,22 +165,7 @@ const OrderPage: FC = () => {
           </div>
         )}
       </div>
-
-      <div className="order-history">
-        <Divider>
-          <h2>Order History</h2>
-        </Divider>
-        {isHistoryLoading && <Spin />}
-        {!isHistoryLoading && (
-          <OrderHistory
-            orderHistory={orderHistory}
-            reorderAction={handleReorderDrink}
-            ticketsRemaining={user.tickets - ticketsPending ?? 0}
-          />
-        )}
-      </div>
-
-      <Drawer title="Create a Drink" open={showOrderDrawer} onClose={handleCloseOrderDrawer} destroyOnClose>
+      <Drawer title="Create a Drink" open={showOrderDrawer} onClose={() => setShowOrderDrawer(false)} destroyOnClose>
         <DrinkForm
           submitDrink={handleSubmitDrink}
           alcohol={alcoholMemo}
@@ -174,6 +174,18 @@ const OrderPage: FC = () => {
           ticketsPending={ticketsPending}
         />
         <div className="random-meme">TODO: PULL RANDOM DRINKING MEME</div>
+      </Drawer>
+      <Drawer title="Order History" open={showHistoryDrawer} onClose={() => setShowHistoryDrawer(false)} destroyOnClose>
+        <div className="order-history">
+          {isHistoryLoading && <Spin />}
+          {!isHistoryLoading && (
+            <OrderHistory
+              orderHistory={orderHistory}
+              reorderAction={handleReorderDrink}
+              ticketsRemaining={user.tickets - ticketsPending ?? 0}
+            />
+          )}
+        </div>
       </Drawer>
       <MainNav />
     </div>

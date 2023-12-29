@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import type { FC } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Spin } from "antd";
+import { Spin, ConfigProvider } from "antd";
 import AuthContext from "src/store/auth-context";
 import useAuth, { UserTypeEnum } from "src/hooks/Auth";
 import Error from "src/components/Error";
@@ -11,6 +11,7 @@ import RegisteredPage from "src/pages/RegisteredPage";
 import PhotoUploadPage from "src/pages/PhotoUploadPage";
 import OrderPage from "src/pages/OrderPage";
 import BartenderPage from "src/pages/BartenderPage";
+import THEME_CONFIG from "src/theme.config";
 
 import "src/styles/App.scss";
 
@@ -107,15 +108,17 @@ const App: FC = () => {
   );
 
   return (
-    <div className="App">
-      {fb && (
-        <AuthContext.Provider value={authContextMemo}>
-          <MainLayout>
-            <RouterProvider router={createBrowserRouter(userRoutes[user.type ?? "default"])} />
-          </MainLayout>
-        </AuthContext.Provider>
-      )}
-    </div>
+    <ConfigProvider theme={THEME_CONFIG}>
+      <div className="App">
+        {fb && (
+          <AuthContext.Provider value={authContextMemo}>
+            <MainLayout>
+              <RouterProvider router={createBrowserRouter(userRoutes[user.type ?? "default"])} />
+            </MainLayout>
+          </AuthContext.Provider>
+        )}
+      </div>
+    </ConfigProvider>
   );
 };
 export default App;

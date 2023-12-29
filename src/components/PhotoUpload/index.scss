@@ -1,0 +1,22 @@
+@use "src/styles/variables" as *;
+
+.photo-upload {
+  padding: 5px 30px;
+  .action {
+    display: flex;
+    justify-content: center;
+    .button-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      .photo-uploader-button {
+        font-size: 1.8rem;
+        color: $pink;
+        width: auto;
+      }
+    }
+  }
+  .intro {
+    margin-bottom: 50px;
+  }
+}

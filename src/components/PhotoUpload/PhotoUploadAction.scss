@@ -1,0 +1,17 @@
+@use "src/styles/variables" as *;
+
+.upload-action {
+  img {
+    max-width: 80vw;
+    max-height: 50vh;
+    margin-bottom: 20px;
+    border: 2px solid $white;
+    box-shadow: $box-shadow;
+  }
+  .action-buttons {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+  }
+}

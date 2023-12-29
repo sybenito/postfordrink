@@ -1,13 +1,14 @@
 import React, { useState, useContext } from "react";
 import type { FC } from "react";
 import type { UploadRequestOption, RcFile } from "rc-upload/lib/interface";
-import { CameraOutlined } from "@ant-design/icons";
-import { Upload, Modal } from "antd";
+import { CameraOutlined, PlusOutlined } from "@ant-design/icons";
+import { Upload, Modal, Divider } from "antd";
 import ImgCrop from "antd-img-crop";
 import AuthContext from "src/store/auth-context";
 import type { AuthContextType } from "src/hooks/Auth";
 import PhotoUploadAction from "src/components/PhotoUpload/PhotoUploadAction";
 import usePhoto from "src/hooks/Photo";
+import "./index.scss";
 
 const PhotoUpload: FC = () => {
   const { fb, user } = useContext<AuthContextType>(AuthContext);
@@ -48,9 +49,18 @@ const PhotoUpload: FC = () => {
   };
 
   return (
-    <div className="main">
+    <div className="photo-upload">
+      <div className="intro">
+        <h1>Post a Photo! Join Us For a Drink.</h1>
+        <p>
+          Our bar is <strong>open</strong> for our guests. In exchange for one drink pass, we ask for one photo post.
+          There is no limit to this as long as our bar is still standing.
+        </p>
+        <p>All approved photos will end up in the photo feed, so lets see those big smiles! </p>
+      </div>
+      <Divider />
       {fb && (
-        <div className="photo-upload">
+        <div className="action">
           <ImgCrop modalClassName="photo-upload-modal" quality={0.7} aspectSlider fillColor="transparent" showReset>
             {photo ? (
               <PhotoUploadAction
@@ -62,20 +72,23 @@ const PhotoUpload: FC = () => {
                 isUploading={isUploading}
               />
             ) : (
-              <Upload
-                name="photo"
-                listType="picture-card"
-                className="photo-uploader"
-                showUploadList={false}
-                accept="image/*"
-                capture="environment"
-                customRequest={handleSelectPhoto}
-                maxCount={1}
-                disabled={isUploading}
-              >
-                {!isUploading && <CameraOutlined />}
-                {isUploading && <CameraOutlined spin />}
-              </Upload>
+              <div className="button-container">
+                <Upload
+                  name="photo"
+                  listType="picture-card"
+                  className="photo-uploader-button"
+                  showUploadList={false}
+                  accept="image/*"
+                  capture="environment"
+                  customRequest={handleSelectPhoto}
+                  maxCount={1}
+                  disabled={isUploading}
+                >
+                  <PlusOutlined />
+                  {!isUploading && <CameraOutlined />}
+                  {isUploading && <CameraOutlined spin />}
+                </Upload>
+              </div>
             )}
           </ImgCrop>
         </div>
