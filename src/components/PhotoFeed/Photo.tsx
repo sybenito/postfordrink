@@ -7,6 +7,8 @@ import { FireOutlined, FireFilled } from "@ant-design/icons";
 import type { PhotoType } from "src/hooks/Photo";
 import AuthContext from "src/store/auth-context";
 
+import "src/components/PhotoFeed/Photo.scss";
+
 interface PhotoProps {
   photo: DocumentData;
   path: string;
@@ -58,18 +60,24 @@ const Photo: FC<PhotoProps> = ({ photo, path, postfix, likeAction }) => {
     }
   }, [photoData, user]);
 
+  const spinnerElement = (
+    <div className="photo-loading">
+      <Spin />
+    </div>
+  );
+
   return (
     <>
       {photoURL && (
         <>
           <div className="meta">
             <div className="comment">
-              <div className="owner">{photoData?.createdBy.name}</div>
+              <h3 className="owner">{photoData?.createdBy.name}</h3>
               {photoData?.comment}
             </div>
           </div>
           <div className="photo">
-            <Image src={photoURL} preview={false} placeholder={<Spin />} loading="lazy" alt={photo.id} />
+            <Image src={photoURL} preview={false} placeholder={spinnerElement} loading="lazy" alt={photo.id} />
           </div>
           <div className="actions">
             <div className="like-count">{likesCount > 0 && <span>{likesCount} Likes</span>}</div>
@@ -86,7 +94,7 @@ const Photo: FC<PhotoProps> = ({ photo, path, postfix, likeAction }) => {
           </div>
         </>
       )}
-      {!photoURL && <Spin />}
+      {!photoURL && spinnerElement}
     </>
   );
 };

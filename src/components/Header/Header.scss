@@ -7,9 +7,15 @@
   padding: 1rem 1rem;
   margin-bottom: 1rem;
   height: 3rem;
-  background-color: $orange;
+  background-color: $blue;
   border-bottom: 1px solid $border-gray;
   box-shadow: $box-shadow;
+  h1 {
+    a {
+      color: $pink;
+      text-decoration: none;
+    }
+  }
   .logo {
     letter-spacing: -0.1rem;
     color: $title-gray;
@@ -23,5 +29,8 @@
     button {
       margin-right: 1rem;
     }
+  }
+  .user-name {
+    color: $pink;
   }
 }

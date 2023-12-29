@@ -1,0 +1,19 @@
+@use "src/styles/variables" as *;
+
+.order-page {
+  padding: 5px 30px;
+  h2 {
+    line-height: 1.4em;
+    vertical-align: middle;
+    strong {
+      font-size: 1.4em;
+      margin-right: 8px;
+    }
+  }
+  .order-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+}

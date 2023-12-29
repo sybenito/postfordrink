@@ -1,0 +1,42 @@
+@use "src/styles/variables" as *;
+
+.photo {
+  margin-bottom: $gutter-sm;
+  width: 100%;
+  .ant-image {
+    border-radius: $border-radius;
+    box-shadow: $box-shadow-2;
+    overflow: hidden;
+    width: 100%;
+    height: auto;
+  }
+}
+.actions {
+  cursor: pointer;
+  height: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  .anticon {
+    font-size: 1.2rem;
+    &.like {
+      animation: orangeToRedAnimation 1.5s ease-in infinite;
+    }
+    &.liked {
+      color: $red;
+    }
+    &.liking {
+      animation: rotate-left-to-right 0.5s linear infinite;
+      color: $orange;
+    }
+  }
+}
+
+.photo-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: $gutter 0 $gutter 0;
+}

@@ -1,0 +1,10 @@
+@use "src/styles/variables" as *;
+
+.drinks {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column-reverse;
+  .order {
+    width: 100%;
+  }
+}
