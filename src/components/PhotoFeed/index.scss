@@ -24,10 +24,12 @@
 }
 
 .photo-feed {
+  display: flex;
+  justify-content: center;
   .item {
     margin-bottom: $gutter-lg;
     display: flex;
-    width: 400px;
+    width: 98%;
     flex-wrap: wrap;
     padding: 10px;
     .meta {
