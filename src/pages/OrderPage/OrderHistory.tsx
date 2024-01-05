@@ -21,16 +21,20 @@ const hasTicketsForDrink = (drink: DrinkType, ticketsRemaining: number) => {
 const OrderHistory: FC<OrderHistoryProps> = ({ orderHistory, reorderAction, ticketsRemaining }) => (
   <div className="drinks">
     {orderHistory.map((order, i) => (
-      <div className="order" key={uuid()}>
-        <Divider orientation="left">Order {i + 1}</Divider>
-        {order.drinks.map((drink) => (
-          <div className="drink" key={uuid()}>
-            <Drink drink={drink} />
-            <Button onClick={() => reorderAction(drink)} disabled={!hasTicketsForDrink(drink, ticketsRemaining)}>
-              Add to Order
-            </Button>
-          </div>
-        ))}
+      <div className="order-container" key={uuid()}>
+        <Divider orientation="right">Order {i + 1}</Divider>
+        <div className="order">
+          {order.drinks.map((drink) => (
+            <div className="drink" key={uuid()}>
+              <div className="items">
+                <Drink drink={drink} />
+              </div>
+              <Button onClick={() => reorderAction(drink)} disabled={!hasTicketsForDrink(drink, ticketsRemaining)}>
+                Add to Order
+              </Button>
+            </div>
+          ))}
+        </div>
       </div>
     ))}
   </div>

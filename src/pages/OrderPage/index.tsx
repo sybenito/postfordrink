@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useMemo } from "react";
 import type { FC } from "react";
 import { Divider, Button, Drawer, Modal, Spin, message } from "antd";
-import { CheckCircleFilled, HistoryOutlined, PlusOutlined, RocketOutlined } from "@ant-design/icons";
+import { CheckCircleFilled, HistoryOutlined, RocketOutlined, CameraOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "src/store/auth-context";
 import useOrder from "src/hooks/Order";
@@ -10,6 +10,7 @@ import type { DrinkType } from "src/hooks/Order";
 import DrinkForm from "src/components/DrinkForm";
 import DrinkList from "src/pages/OrderPage/DrinkList";
 import OrderHistory from "src/pages/OrderPage/OrderHistory";
+import ButtonCta from "src/components/ButtonCta";
 import useAuthProtect from "src/hooks/AuthProtect";
 
 import "./index.scss";
@@ -39,6 +40,8 @@ const OrderPage: FC = () => {
   } = useOrder();
   const [showOrderDrawer, setShowOrderDrawer] = useState(false);
   const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
+  const [isCancelOrderVisible, setIsCancelOrderVisible] = useState(false);
+  const [isCancelOrderLoadedVisible, setIsCancelOrderLoadedVisible] = useState(false);
   const routerNav = useNavigate();
 
   const alcoholMemo = useMemo(() => alcohol, [alcohol]);
@@ -59,25 +62,13 @@ const OrderPage: FC = () => {
   const handleCompleteOrder = () => saveOrder();
 
   const handleCancelOrder = () => {
-    Modal.confirm({
-      title: "Cancel Order",
-      content: "Are you sure you want to cancel this order?",
-      okText: "Yes, Cancel",
-      cancelText: "No",
-      onOk: () => {
-        dispatchOrder({ type: "RESET_ORDER", payload: null });
-      },
-    });
+    dispatchOrder({ type: "RESET_ORDER", payload: null });
+    setIsCancelOrderVisible(false);
   };
 
   const handleCancelOrderLoaded = () => {
-    Modal.confirm({
-      title: "Cancel Order",
-      content: "Are you sure you want to cancel this order?",
-      okText: "Yes, Cancel",
-      cancelText: "No",
-      onOk: cancelOrder,
-    });
+    cancelOrder();
+    setIsCancelOrderLoadedVisible(false);
   };
 
   const handleReorderDrink = (drink: DrinkType) => {
@@ -94,14 +85,27 @@ const OrderPage: FC = () => {
   useEffect(() => {
     getExistingOrder();
     getOrderHistory();
-  }, [user, getExistingOrder, getOrderHistory]);
+    if (user.tickets - ticketsPending === 0) setShowHistoryDrawer(false);
+  }, [user, getExistingOrder, getOrderHistory, ticketsPending]);
+
+  const postDrinkButton = (
+    <Button type="default" size="large" onClick={() => routerNav("/photo-upload")} icon={<CameraOutlined />}>
+      Post a photo
+    </Button>
+  );
 
   return (
     <div className="order-page">
       <div className="header">
-        <h1>Join Us For a Drink!</h1>
+        <h1>
+          Join Us For a Drink!
+          <br />
+          Post a Photo
+        </h1>
         <p>Complete your order, then scan your QR code at the bar.</p>
         <p>Be sure to post more photos to get more drink passes.</p>
+        <br />
+        {postDrinkButton}
       </div>
       <div className="virtual-hostess">
         <Divider>
@@ -109,35 +113,20 @@ const OrderPage: FC = () => {
             <strong>{user.tickets - ticketsPending ?? "No"}</strong> Drink Passes
           </h2>
         </Divider>
-        {isOrderLoading && <Spin />}
-        {!isOrderLoading && !orderId && (
-          <div className="order-actions">
-            <Button
-              type="primary"
-              onClick={() => {
-                setShowOrderDrawer(true);
-              }}
-              disabled={user.tickets === 0 || (user.tickets > 0 && ticketsPending >= user.tickets)}
-            >
-              <PlusOutlined />
-              <RocketOutlined />
-            </Button>
-            <Button
-              type="primary"
-              onClick={() => {
-                setShowHistoryDrawer(true);
-              }}
-            >
-              <PlusOutlined />
-              <HistoryOutlined />
-            </Button>
-          </div>
-        )}
+        <div className="order-actions">
+          {isOrderLoading && <Spin />}
+          {!isOrderLoading && !orderId && (
+            <>
+              <ButtonCta title="Create a Drink" action={() => setShowOrderDrawer(true)} icon={<RocketOutlined />} />
+              <ButtonCta title="Order History" action={() => setShowHistoryDrawer(true)} icon={<HistoryOutlined />} />
+            </>
+          )}
+        </div>
         {!isOrderLoading && orderId && (
           <div className="qr-code">
             {orderLoaded?.completedBy && <CheckCircleFilled />}
             <img src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${orderId}`} alt="qr code" />
-            <p>Scan this QR code at the bar</p>
+            <h4>Scan this QR code at the bar</h4>
           </div>
         )}
         {user.tickets === 0 && (
@@ -148,8 +137,8 @@ const OrderPage: FC = () => {
         )}
         <DrinkList order={order} removeAction={handleRemoveDrink} showAction={!orderId} />
         {order.length > 0 && !orderId && (
-          <div className="order-actions">
-            <Button size="large" onClick={handleCancelOrder} loading={isSaving}>
+          <div className="completion-actions order-actions">
+            <Button size="large" onClick={() => setIsCancelOrderVisible(true)} loading={isSaving}>
               Cancel Order
             </Button>
             <Button type="primary" size="large" onClick={handleCompleteOrder} loading={isSaving}>
@@ -158,22 +147,29 @@ const OrderPage: FC = () => {
           </div>
         )}
         {order.length > 0 && orderId && (
-          <div className="order-actions">
-            <Button size="large" onClick={handleCancelOrderLoaded} loading={isSaving}>
+          <div className="completion-actions order-actions">
+            <Button size="large" onClick={() => setIsCancelOrderLoadedVisible(true)} loading={isSaving}>
               Cancel Order
             </Button>
           </div>
         )}
       </div>
       <Drawer title="Create a Drink" open={showOrderDrawer} onClose={() => setShowOrderDrawer(false)} destroyOnClose>
-        <DrinkForm
-          submitDrink={handleSubmitDrink}
-          alcohol={alcoholMemo}
-          mixer={mixerMemo}
-          garnish={garnishMemo}
-          ticketsPending={ticketsPending}
-        />
-        <div className="random-meme">TODO: PULL RANDOM DRINKING MEME</div>
+        {user.tickets - ticketsPending > 0 && (
+          <DrinkForm
+            submitDrink={handleSubmitDrink}
+            alcohol={alcoholMemo}
+            mixer={mixerMemo}
+            garnish={garnishMemo}
+            ticketsPending={ticketsPending}
+          />
+        )}
+        {user.tickets - ticketsPending < 1 && (
+          <div className="no-tickets">
+            <p>Post more photos to receive more drink passes.</p>
+            {postDrinkButton}
+          </div>
+        )}
       </Drawer>
       <Drawer title="Order History" open={showHistoryDrawer} onClose={() => setShowHistoryDrawer(false)} destroyOnClose>
         <div className="order-history">
@@ -188,6 +184,26 @@ const OrderPage: FC = () => {
         </div>
       </Drawer>
       <MainNav />
+      <Modal
+        title="Cancel Order"
+        open={isCancelOrderVisible}
+        onOk={handleCancelOrder}
+        okText="Yes, Cancel Order"
+        cancelText="No"
+        onCancel={() => setIsCancelOrderVisible(false)}
+      >
+        <p>Are you sure you want to cancel this order?</p>
+      </Modal>
+      <Modal
+        title="Cancel Order"
+        open={isCancelOrderLoadedVisible}
+        onOk={handleCancelOrderLoaded}
+        okText="Yes, Cancel Order"
+        cancelText="No"
+        onCancel={() => setIsCancelOrderLoadedVisible(false)}
+      >
+        <p>Are you sure you want to cancel this order?</p>
+      </Modal>
     </div>
   );
 };

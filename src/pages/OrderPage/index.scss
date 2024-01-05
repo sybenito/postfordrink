@@ -16,4 +16,12 @@
     justify-content: center;
     gap: 20px;
   }
+  .completion-actions {
+    margin: 20px 0 100px 0;
+  }
+  .qr-code {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 }

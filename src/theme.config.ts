@@ -19,6 +19,8 @@ const THEME_CONFIG = {
       colorText: COLOR_BLUE,
       defaultBorderColor: COLOR_BLUE,
       defaultColor: COLOR_BLUE,
+      defaultGhostColor: COLOR_BLUE,
+      defaultGhostBorderColor: COLOR_BLUE,
     },
     Input: {
       colorPrimary: COLOR_BLUE,
@@ -37,6 +39,10 @@ const THEME_CONFIG = {
       colorText: COLOR_BLUE,
       defaultBorderColor: COLOR_BLUE,
       defaultColor: COLOR_BLUE,
+    },
+    Modal: {
+      titleColor: COLOR_BLUE,
+      colorText: COLOR_BLUE,
     },
   },
 };

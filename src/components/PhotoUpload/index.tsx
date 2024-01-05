@@ -2,8 +2,9 @@ import React, { useState, useContext } from "react";
 import type { FC } from "react";
 import type { UploadRequestOption, RcFile } from "rc-upload/lib/interface";
 import { CameraOutlined, PlusOutlined } from "@ant-design/icons";
-import { Upload, Modal, Divider } from "antd";
+import { Upload, Modal, Divider, Button } from "antd";
 import ImgCrop from "antd-img-crop";
+import { useNavigate } from "react-router-dom";
 import AuthContext from "src/store/auth-context";
 import type { AuthContextType } from "src/hooks/Auth";
 import PhotoUploadAction from "src/components/PhotoUpload/PhotoUploadAction";
@@ -11,6 +12,7 @@ import usePhoto from "src/hooks/Photo";
 import "./index.scss";
 
 const PhotoUpload: FC = () => {
+  const routerNav = useNavigate();
   const { fb, user } = useContext<AuthContextType>(AuthContext);
   const { photoComment, setPhotoComment, uploadPhoto, isUploading, createPhotoMetadata, resetPhotoId } = usePhoto();
 
@@ -51,12 +53,20 @@ const PhotoUpload: FC = () => {
   return (
     <div className="photo-upload">
       <div className="intro">
-        <h1>Post a Photo! Join Us For a Drink.</h1>
+        <h1>
+          Post a Photo!
+          <br />
+          Grab a Drink.
+        </h1>
         <p>
-          Our bar is <strong>open</strong> for our guests. In exchange for one drink pass, we ask for one photo post.
+          Our bar is <strong>open</strong> to our guests. In exchange for one drink pass, we ask for one photo post.
           There is no limit to this as long as our bar is still standing.
         </p>
-        <p>All approved photos will end up in the photo feed, so lets see those big smiles! </p>
+        <p>All approved photos will end up in the photo feed, so lets get cheese&apos;n! </p>
+        <br />
+        <Button type="default" size="large" onClick={() => routerNav("/order")}>
+          Create a drink order &gt;
+        </Button>
       </div>
       <Divider />
       {fb && (
@@ -84,7 +94,7 @@ const PhotoUpload: FC = () => {
                   maxCount={1}
                   disabled={isUploading}
                 >
-                  <PlusOutlined />
+                  <PlusOutlined /> &nbsp;
                   {!isUploading && <CameraOutlined />}
                   {isUploading && <CameraOutlined spin />}
                 </Upload>

@@ -1,9 +1,11 @@
 import React from "react";
 import type { FC } from "react";
 import { v4 as uuid } from "uuid";
-import { Button } from "antd";
+import { Button, Divider } from "antd";
 import type { DrinkType } from "src/hooks/Order";
 import Drink from "src/pages/OrderPage/Drink";
+
+import "./DrinkList.scss";
 
 interface DrinkListProps {
   order: DrinkType[];
@@ -13,10 +15,21 @@ interface DrinkListProps {
 
 const DrinkList: FC<DrinkListProps> = ({ order, removeAction, showAction }) => (
   <div className="drink-list">
+    {order.length > 0 && (
+      <Divider>
+        <h2>Your Order</h2>
+      </Divider>
+    )}
     {order.map((drink, i) => (
       <div key={uuid()} className="order-item">
-        <Drink drink={drink} />
-        {showAction && removeAction && <Button onClick={() => removeAction(i)}>Remove</Button>}
+        <div className="drink">
+          <Drink drink={drink} />
+        </div>
+        {showAction && removeAction && (
+          <Button onClick={() => removeAction(i)} className="remove-button">
+            Remove
+          </Button>
+        )}
       </div>
     ))}
   </div>

@@ -1,0 +1,34 @@
+@use "src/styles/variables" as *;
+
+.button-cta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .label {
+    margin-bottom: 10px;
+    color: $pink;
+  }
+  .ant-btn {
+    background: transparent;
+    border: 1px dashed;
+    font-size: 2rem;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $pink;
+    .anticon {
+      margin: 0;
+    }
+    &:hover {
+      color: $pink;
+      opacity: 0.7;
+    }
+  }
+  .ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover {
+    color: $pink;
+    border-color: $pink;
+  }
+}

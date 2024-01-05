@@ -1,1 +1,31 @@
 @import "variables.scss";
+
+.ant-modal-confirm-body-wrapper {
+  .ant-modal-confirm-body {
+    .ant-modal-confirm-title {
+      color: $blue-2;
+    }
+    .ant-modal-confirm-content {
+      color: $blue-2;
+    }
+  }
+}
+
+.ant-btn-default {
+  border-color: $blue-2;
+  color: $blue-2;
+  &:hover {
+    border-color: $blue-2;
+    color: $blue-2;
+    opacity: 0.7;
+  }
+}
+
+.ant-btn-primary {
+  background-color: $blue-2;
+  color: $white;
+  &:hover {
+    background-color: $blue-2 !important;
+    opacity: 0.7;
+  }
+}
