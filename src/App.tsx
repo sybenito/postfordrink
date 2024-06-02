@@ -12,6 +12,7 @@ import PhotoUploadPage from "src/pages/PhotoUploadPage";
 import OrderPage from "src/pages/OrderPage";
 import BartenderPage from "src/pages/BartenderPage";
 import THEME_CONFIG from "src/theme.config";
+import AdminPage from "src/pages/AdminPage";
 
 import "src/styles/App.scss";
 
@@ -69,6 +70,10 @@ const userRoutes: UserRoutesType = {
     {
       path: "/registered",
       element: <RegisteredPage />,
+    },
+    {
+      path: "/admin",
+      element: <AdminPage />,
     },
     {
       path: "*",

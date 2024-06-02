@@ -20,19 +20,22 @@ import type { UserType } from "src/hooks/Auth";
 import AuthContext from "src/store/auth-context";
 
 interface AlcoholType {
-  id: string;
+  id?: string;
   name: string;
   canDouble: boolean;
+  available?: boolean;
 }
 
 interface MixerType {
-  id: string;
+  id?: string;
   name: string;
+  available?: boolean;
 }
 
 interface GarnishType {
-  id: string;
+  id?: string;
   name: string;
+  available?: boolean;
 }
 
 type OrderUserType = Omit<UserType, "type" | "tickets">;
