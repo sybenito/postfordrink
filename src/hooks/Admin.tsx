@@ -5,7 +5,6 @@ import type { AlcoholType, MixerType, GarnishType } from "./Order";
 
 const useAdmin = () => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [selectedId, setSelectedId] = useState<string>();
 
   const db = getFirestore();
 
@@ -31,7 +30,7 @@ const useAdmin = () => {
 
   const updateAlcohol = useCallback(
     (alcohol: AlcoholType) => {
-      const docRef = doc(db, "alcohol_type", selectedId as string);
+      const docRef = doc(db, "alcohol_type", alcohol.id as string);
       if (alcohol) {
         setIsSaving(true);
         updateDoc(docRef, { ...alcohol })
@@ -47,7 +46,7 @@ const useAdmin = () => {
           });
       }
     },
-    [selectedId, db]
+    [db]
   );
 
   const addMixer = useCallback(
@@ -72,7 +71,7 @@ const useAdmin = () => {
 
   const updateMixer = useCallback(
     (mixer: MixerType) => {
-      const docRef = doc(db, "mixer_type", selectedId as string);
+      const docRef = doc(db, "mixer_type", mixer.id as string);
       if (mixer) {
         setIsSaving(true);
         updateDoc(docRef, { ...mixer })
@@ -88,7 +87,7 @@ const useAdmin = () => {
           });
       }
     },
-    [selectedId, db]
+    [db]
   );
 
   const addGarnish = useCallback(
@@ -113,7 +112,7 @@ const useAdmin = () => {
 
   const updateGarnish = useCallback(
     (garnish: GarnishType) => {
-      const docRef = doc(db, "garnish_type", selectedId as string);
+      const docRef = doc(db, "garnish_type", garnish.id as string);
       if (garnish) {
         setIsSaving(true);
         updateDoc(docRef, { ...garnish })
@@ -129,19 +128,17 @@ const useAdmin = () => {
           });
       }
     },
-    [selectedId, db]
+    [db]
   );
 
   return {
     isSaving,
-    selectedId,
     addAlcohol,
     updateAlcohol,
     addMixer,
     updateMixer,
     addGarnish,
     updateGarnish,
-    setSelectedId,
   };
 };
 

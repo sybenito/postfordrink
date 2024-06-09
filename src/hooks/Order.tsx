@@ -262,6 +262,7 @@ const useOrder = () => {
             id: d.id,
             name: d.data().name,
             canDouble: d.data().can_double,
+            available: d.data().available,
           };
 
           alcoholList.push(newAlcohol);
@@ -282,6 +283,7 @@ const useOrder = () => {
           const newMixer: MixerType = {
             id: d.id,
             name: d.data().name,
+            available: d.data().available,
           };
           mixerList.push(newMixer);
         });
@@ -301,6 +303,7 @@ const useOrder = () => {
           const newGarnish: GarnishType = {
             id: d.id,
             name: d.data().name,
+            available: d.data().available,
           };
           garnishList.push(newGarnish);
         });

@@ -1,0 +1,10 @@
+@use "src/styles/variables" as *;
+
+.bar-stock-editor {
+  .table-section {
+    margin-bottom: 1rem;
+    Button {
+      margin: 1rem 0;
+    }
+    }
+}
