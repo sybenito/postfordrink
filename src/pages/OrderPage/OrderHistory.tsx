@@ -20,6 +20,7 @@ const hasTicketsForDrink = (drink: DrinkType, ticketsRemaining: number) => {
 
 const OrderHistory: FC<OrderHistoryProps> = ({ orderHistory, reorderAction, ticketsRemaining }) => (
   <div className="drinks">
+    {orderHistory.length === 0 && <h3>No orders in your history</h3>}
     {orderHistory.map((order, i) => (
       <div className="order" key={uuid()}>
         <Divider orientation="left">Order {i + 1}</Divider>

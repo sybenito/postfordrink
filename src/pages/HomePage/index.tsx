@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import type { FC } from "react";
 import { Spin, Tabs } from "antd";
 import type { TabsProps } from "antd";
@@ -7,11 +7,13 @@ import AuthContext from "src/store/auth-context";
 import PhotoFeed from "src/components/PhotoFeed";
 import MainNav from "src/components/MainNav";
 import useAuthProtect from "src/hooks/AuthProtect";
+import type { AuthContextType } from "src/hooks/Auth";
 
 import "src/pages/HomePage/index.scss";
 
 const HomePage: FC = () => {
   useAuthProtect().validateAuth();
+  const authContext = useContext<AuthContextType>(AuthContext);
   const { isSignedIn } = React.useContext(AuthContext);
 
   const tabItems: TabsProps["items"] = [
@@ -32,7 +34,8 @@ const HomePage: FC = () => {
       {isSignedIn === true && (
         <div className="feed-container">
           <div className="welcome-message">
-            <h1>Welcome!</h1>
+            {authContext.isSignedIn && authContext.user?.name && <h1>Welcome {authContext.user?.name}!</h1>}
+
             <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
               dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex

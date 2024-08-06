@@ -7,8 +7,9 @@ body {
     "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #dbf5f3;
-  color: $blue-2;
+  background-color: $black;
+  color: $gold;
+  font-size: $font-size;
 }
 
 h2,
@@ -16,13 +17,14 @@ h3,
 h4,
 h5,
 h6 {
-  color: $blue-2;
+  color: $gold;
 }
 
 h1 {
-  font-size: 2.1rem;
+  font-family: "Playwrite AR", sans-serif;
+  font-size: 1.8rem;
   font-weight: $font-weight;
-  color: $pink;
+  color: $gold;
 }
 
 h2 {
@@ -31,10 +33,72 @@ h2 {
 }
 
 h3 {
-  color: $blue-2;
   font-size: 1.3rem;
   font-weight: $font-weight;
-  margin: 0;
+  margin: 0 0 2rem 0;
   padding: 0;
-  color: $pink;
+  color: $gold;
+}
+
+.content-section {
+  padding: 1rem;
+}
+
+.ant-spin {
+  width: 100%;
+}
+
+.ant-btn-primary:disabled {
+  color: $gold;
+  opacity: 0.2;
+}
+
+.ant-btn {
+  border-color: $gold;
+  color: $gold;
+  &:not(:disabled):not(.ant-btn-disabled):hover {
+    border-color: $gold;
+    color: $gold;
+    opacity: 0.8;
+  }
+
+}
+
+.ant-btn-primary {
+  background-color: $red-2;
+  border-color: $red-2;
+  color: $gold;
+  &:not(:disabled):not(.ant-btn-disabled):hover {
+    background-color: $red-2;
+    border-color: $red-2;
+    color: $gold;
+    opacity: 0.8;
+  }
+}
+
+.drink-list {
+  .order-item {
+    border: 1px solid $red-2;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: $border-radius;
+    position: relative;
+    .ant-btn.remove {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+    .drink-item .item{
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+.virtual-hostess{
+  .qr-code {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+  padding-bottom: 100px;
 }

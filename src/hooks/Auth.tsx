@@ -1,25 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import { getFirestore, getDoc, doc, setDoc, serverTimestamp, FieldValue } from "firebase/firestore";
+import { getFirestore, getDoc, doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { UserType, UserTypeEnum } from "src/models/user";
 import FIREBASE_CONFIG from "src/secrets";
-
-export enum UserTypeEnum {
-  HOST = "host",
-  GUEST = "guest",
-  BAR = "bar",
-  DEFAULT = "default",
-}
-
-interface UserType {
-  id: string;
-  createdAt?: FieldValue | null;
-  name: string;
-  email: string;
-  photoURL: string;
-  type: UserTypeEnum;
-  tickets: number;
-}
 
 const BASE_TICKET_AMOUNT = 2;
 

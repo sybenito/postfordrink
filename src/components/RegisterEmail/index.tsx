@@ -63,7 +63,7 @@ const RegisterEmail: FC<RegisterEmailProps> = ({ handleSubmit, isLoading }) => {
   };
 
   return (
-    <div className="register-email">
+    <div className="register-email content-section">
       <Form onFinish={handleFormSubmit}>
         <Form.Item label="Name" name="name" rules={nameValidationRules}>
           <Input

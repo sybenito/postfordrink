@@ -1,43 +1,50 @@
-const COLOR_PINK = "#d88189";
-const COLOR_PINK_LIGHT = "rgba(216, 129, 137, 0.5)";
-const COLOR_BLUE = "#22bcb7";
-const COLOR_BLUE_LIGHT = "rgba(34, 188, 183, 0.6)";
+const PRIMARY_TEXT = "#bfa75d"; // gold
+const PRIMARY_BG = "#670404"; // red
 
 const THEME_CONFIG = {
   token: {
-    colorPrimary: COLOR_PINK,
-    colorBorder: COLOR_PINK,
-    colorBorderSecondary: COLOR_PINK_LIGHT,
-    colorText: COLOR_BLUE,
+    colorPrimary: PRIMARY_TEXT,
+    colorBorder: PRIMARY_TEXT,
+    colorBorderSecondary: PRIMARY_TEXT,
+    colorText: PRIMARY_TEXT,
   },
   components: {
     Button: {
-      colorPrimary: COLOR_BLUE,
-      colorBorder: COLOR_BLUE,
-      colorPrimaryBgHover: COLOR_BLUE_LIGHT,
-      colorPrimaryHover: COLOR_BLUE_LIGHT,
-      colorText: COLOR_BLUE,
-      defaultBorderColor: COLOR_BLUE,
-      defaultColor: COLOR_BLUE,
+      colorPrimary: PRIMARY_BG,
+      colorBorder: PRIMARY_TEXT,
+      colorPrimaryBgHover: PRIMARY_BG,
+      colorPrimaryHover: PRIMARY_BG,
+      colorText: PRIMARY_TEXT,
+      defaultBorderColor: PRIMARY_TEXT,
+      defaultColor: PRIMARY_TEXT,
     },
     Input: {
-      colorPrimary: COLOR_BLUE,
-      colorBorder: COLOR_BLUE,
-      colorPrimaryBgHover: COLOR_BLUE_LIGHT,
-      colorPrimaryHover: COLOR_BLUE_LIGHT,
-      colorText: COLOR_BLUE,
-      defaultBorderColor: COLOR_BLUE,
-      defaultColor: COLOR_BLUE,
+      colorPrimary: PRIMARY_BG,
+      colorBorder: PRIMARY_BG,
+      colorPrimaryBgHover: PRIMARY_BG,
+      colorPrimaryHover: PRIMARY_BG,
+      colorText: PRIMARY_BG,
+      defaultBorderColor: PRIMARY_BG,
+      defaultColor: PRIMARY_BG,
     },
     Select: {
-      colorPrimary: COLOR_BLUE,
-      colorBorder: COLOR_BLUE,
-      colorPrimaryBgHover: COLOR_BLUE_LIGHT,
-      colorPrimaryHover: COLOR_BLUE_LIGHT,
-      colorText: COLOR_BLUE,
-      defaultBorderColor: COLOR_BLUE,
-      defaultColor: COLOR_BLUE,
+      colorPrimary: PRIMARY_BG,
+      colorBorder: PRIMARY_BG,
+      colorPrimaryBgHover: PRIMARY_BG,
+      colorPrimaryHover: PRIMARY_BG,
+      colorText: PRIMARY_BG,
+      defaultBorderColor: PRIMARY_BG,
+      defaultColor: PRIMARY_BG,
     },
+    Modal: {
+        colorPrimary: PRIMARY_BG,
+        colorBorder: PRIMARY_TEXT,
+        colorPrimaryBgHover: PRIMARY_BG,
+        colorPrimaryHover: PRIMARY_BG,
+        colorText: PRIMARY_TEXT,
+        defaultBorderColor: PRIMARY_TEXT,
+        defaultColor: PRIMARY_TEXT,
+      }
   },
 };
 

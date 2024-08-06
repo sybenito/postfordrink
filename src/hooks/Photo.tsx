@@ -18,7 +18,7 @@ import {
 } from "firebase/firestore";
 import { message } from "antd";
 import type { DocumentData } from "firebase/firestore";
-import type { UserType } from "src/hooks/Auth";
+import type { UserType } from "src/models/user";
 
 enum PhotoStatusEnum {
   PENDING = "pending",

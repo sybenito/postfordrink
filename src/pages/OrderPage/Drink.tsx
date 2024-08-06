@@ -7,15 +7,15 @@ interface OrderPageProps {
 }
 
 const OrderPage: FC<OrderPageProps> = ({ drink }) => (
-  <>
-    <div className="alcohol">
+  <div className="drink-item">
+    <div className="alcohol item">
       {drink.double ? "double " : ""}
       {drink.alcohol?.name}
     </div>
-    <div className="mixer">{drink.mixer.map((m) => m.name).join(" + ")}</div>
-    <div className="garnish">{drink.garnish.map((g) => g.name).join(" + ")}</div>
-    <div className="request">{drink.request}</div>
-  </>
+    <div className="mixer item">{drink.mixer.map((m) => m.name).join(" + ")}</div>
+    <div className="garnish item">{drink.garnish.map((g) => g.name).join(" + ")}</div>
+    <div className="request item">{drink.request}</div>
+  </div>
 );
 
 export default OrderPage;

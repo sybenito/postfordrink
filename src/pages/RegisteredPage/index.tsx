@@ -27,7 +27,8 @@ const RegisteredPage: FC = () => {
       })
       .catch((e) => {
         console.error(e);
-        message.error("Error signing in with email link.  Please contact an administrator.");
+        message.error("Error signing in with email link.  Please try again.");
+        document.location.href = "/";
       })
       .finally(() => {
         isSigninAction.current = false;
@@ -56,7 +57,7 @@ const RegisteredPage: FC = () => {
   }, [completeSignIn, isSigninAction]);
 
   return (
-    <div id="registered">
+    <div id="registered" className="content-section">
       {!showEmailInput && redirectCount !== null && (
         <div className="registration-complete">
           <h1>Your registration is complete!</h1>

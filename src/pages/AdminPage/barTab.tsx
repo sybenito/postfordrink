@@ -138,6 +138,7 @@ const BarTab: FC = () => {
           dataSource={alcohol}
           rowKey="id"
           pagination={false}
+          loading={isSaving}
           onRow={(record) => ({
             onClick: () => openDrawer("ALCOHOL", record),
           })}
@@ -151,6 +152,7 @@ const BarTab: FC = () => {
           dataSource={mixer}
           rowKey="id"
           pagination={false}
+          loading={isSaving}
           onRow={(record) => ({
             onClick: () => openDrawer("MIXER", record),
           })}
@@ -164,6 +166,7 @@ const BarTab: FC = () => {
           dataSource={garnish}
           rowKey="id"
           pagination={false}
+          loading={isSaving}
           onRow={(record) => ({
             onClick: () => openDrawer("GARNISH", record),
           })}

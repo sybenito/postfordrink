@@ -3,7 +3,7 @@ import type { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { FloatButton } from "antd";
 import { HomeOutlined, CameraOutlined, RocketOutlined } from "@ant-design/icons";
-import { UserTypeEnum } from "src/hooks/Auth";
+import { UserTypeEnum } from "src/models/user";
 import AuthContext from "src/store/auth-context";
 
 interface MainNavItem {

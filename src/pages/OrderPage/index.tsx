@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useMemo } from "react";
 import type { FC } from "react";
 import { Divider, Button, Drawer, Modal, Spin, message } from "antd";
-import { CheckCircleFilled, HistoryOutlined, PlusOutlined, RocketOutlined } from "@ant-design/icons";
+import { CheckCircleFilled, HistoryOutlined, RocketOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "src/store/auth-context";
 import useOrder from "src/hooks/Order";
@@ -100,7 +100,12 @@ const OrderPage: FC = () => {
     <div className="order-page">
       <div className="header">
         <h1>Join Us For a Drink!</h1>
-        <p>Complete your order, then scan your QR code at the bar.</p>
+        <p>
+          <strong>First</strong> create your order
+        </p>
+        <p>
+          <strong>Then</strong> scan your QR code at the bar.
+        </p>
         <p>Be sure to post more photos to get more drink passes.</p>
       </div>
       <div className="virtual-hostess">
@@ -119,7 +124,7 @@ const OrderPage: FC = () => {
               }}
               disabled={user.tickets === 0 || (user.tickets > 0 && ticketsPending >= user.tickets)}
             >
-              <PlusOutlined />
+              Order
               <RocketOutlined />
             </Button>
             <Button
@@ -128,7 +133,7 @@ const OrderPage: FC = () => {
                 setShowHistoryDrawer(true);
               }}
             >
-              <PlusOutlined />
+              History
               <HistoryOutlined />
             </Button>
           </div>
@@ -137,7 +142,7 @@ const OrderPage: FC = () => {
           <div className="qr-code">
             {orderLoaded?.completedBy && <CheckCircleFilled />}
             <img src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${orderId}`} alt="qr code" />
-            <p>Scan this QR code at the bar</p>
+            <h3>Scan this QR code at the bar</h3>
           </div>
         )}
         {user.tickets === 0 && (
@@ -173,7 +178,6 @@ const OrderPage: FC = () => {
           garnish={garnishMemo}
           ticketsPending={ticketsPending}
         />
-        <div className="random-meme">TODO: PULL RANDOM DRINKING MEME</div>
       </Drawer>
       <Drawer title="Order History" open={showHistoryDrawer} onClose={() => setShowHistoryDrawer(false)} destroyOnClose>
         <div className="order-history">

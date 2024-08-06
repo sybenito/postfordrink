@@ -16,7 +16,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { message } from "antd";
-import type { UserType } from "src/hooks/Auth";
+import type { UserType } from "src/models/user";
 import AuthContext from "src/store/auth-context";
 
 interface AlcoholType {

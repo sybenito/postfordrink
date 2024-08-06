@@ -4,6 +4,7 @@ import { Tabs, TabsProps } from "antd";
 import AuthContext from "src/store/auth-context";
 import useAuthProtect from "src/hooks/AuthProtect";
 import BarTab from "./barTab";
+import UserTab from "./userTab";
 
 const AdminPage: FC = () => {
   useAuthProtect().validateAuth();
@@ -18,12 +19,12 @@ const AdminPage: FC = () => {
     {
       key: "2",
       label: "Users",
-      children: <BarTab />,
+      children: <UserTab />,
     },
   ];
 
   return (
-    <div className="admin-page">
+    <div className="admin-page content-section">
       <div className="header">
         <h1>
           Hello, {user.name}.<br />
