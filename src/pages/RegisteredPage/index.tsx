@@ -5,7 +5,7 @@ import { getAuth, isSignInWithEmailLink, signInWithEmailLink, updateProfile } fr
 import RegisterEmail from "src/components/RegisterEmail";
 import type { RegistrationType } from "src/components/RegisterEmail";
 
-const REDIRECT_SECONDS = 4;
+const REDIRECT_SECONDS = 3;
 const REGISTER_URL = `${window.location.href}registered`;
 
 const auth = getAuth();
@@ -59,7 +59,7 @@ const RegisteredPage: FC = () => {
   return (
     <div id="registered" className="content-section">
       {!showEmailInput && redirectCount !== null && (
-        <div className="registration-complete">
+        <div className="registration-complete content-section text-center">
           <h1>Your registration is complete!</h1>
           <h3>You will be redirected to the party in:</h3>
           <div className="counter">

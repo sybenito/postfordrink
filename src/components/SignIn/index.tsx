@@ -61,6 +61,8 @@ const SignIn: FC = () => {
         </div>
       ) : (
         <div className="email-registration-sent">
+          <br />
+          <br />
           <p>Check your email to get your sign-in link</p>
         </div>
       )}

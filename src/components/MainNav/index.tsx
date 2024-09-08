@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import type { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { FloatButton } from "antd";
-import { HomeOutlined, CameraOutlined, RocketOutlined } from "@ant-design/icons";
+import { HomeOutlined, CameraOutlined, RocketOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 import { UserTypeEnum } from "src/models/user";
 import AuthContext from "src/store/auth-context";
 
@@ -53,6 +53,21 @@ const MainNav: FC = () => {
         name: "Home",
         icon: <HomeOutlined />,
         action: () => navigate("/"),
+      },
+      {
+        name: "Upload Photo",
+        icon: <CameraOutlined />,
+        action: () => navigate("/photo-upload"),
+      },
+      {
+        name: "Order",
+        icon: <RocketOutlined />,
+        action: () => navigate("/order"),
+      },
+      {
+        name: "Admin",
+        icon: <UsergroupAddOutlined />,
+        action: () => navigate("/admin"),
       },
     ],
     [UserTypeEnum.DEFAULT]: [
