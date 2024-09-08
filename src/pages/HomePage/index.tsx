@@ -24,7 +24,7 @@ const HomePage: FC = () => {
     },
     {
       key: "2",
-      label: "Your Photos",
+      label: "Your Posts",
       children: <PhotoFeed />,
     },
   ];

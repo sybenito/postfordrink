@@ -73,6 +73,14 @@ const userRoutes: UserRoutesType = {
       element: <RegisteredPage />,
     },
     {
+      path: "/photo-upload",
+      element: <PhotoUploadPage />,
+    },
+    {
+      path: "/order",
+      element: <OrderPage />,
+    },
+    {
       path: "/admin",
       element: <AdminPage />,
     },
