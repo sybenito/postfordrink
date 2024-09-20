@@ -8,6 +8,7 @@ import PhotoFeed from "src/components/PhotoFeed";
 import MainNav from "src/components/MainNav";
 import useAuthProtect from "src/hooks/AuthProtect";
 import type { AuthContextType } from "src/hooks/Auth";
+import { UserTypeEnum } from "src/models/user";
 
 import "src/pages/HomePage/index.scss";
 
@@ -33,15 +34,14 @@ const HomePage: FC = () => {
     <div id="home-page">
       {isSignedIn === true && (
         <div className="feed-container">
-          <div className="welcome-message">
-            {authContext.isSignedIn && authContext.user?.name && <h1>Welcome {authContext.user?.name}!</h1>}
-
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-              ea commodo consequat.
-            </p>
-          </div>
+          {authContext.user.type !== UserTypeEnum.HOST && (
+            <div className="welcome-message">
+              {authContext.isSignedIn && authContext.user?.name && <h1>Welcome {authContext.user?.name}!</h1>}
+              <p>We want to share this moment from your point-of-view.</p>
+              <p>Post a photo and recieve 2 drink passes each photo. Then scan your order at the Bar.</p>
+              <p>Lets capture this moment together.</p>
+            </div>
+          )}
           <Tabs items={tabItems} />
         </div>
       )}

@@ -14,6 +14,7 @@ const optionsColumns: TableProps<UserType>["columns"] = [
     title: "Email",
     dataIndex: "email",
     key: "email",
+    ellipsis: true,
   },
   {
     title: "User Type",
@@ -95,7 +96,7 @@ const UserTab: FC = () => {
         />
       </div>
       <Drawer
-        title={selectedUser?.email}
+        title="Edit User"
         placement="right"
         closable={false}
         open={isDrawerVisible}

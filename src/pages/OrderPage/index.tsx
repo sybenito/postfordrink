@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useMemo } from "react";
 import type { FC } from "react";
 import { Divider, Button, Drawer, Modal, Spin, message } from "antd";
-import { CheckCircleFilled, HistoryOutlined, RocketOutlined } from "@ant-design/icons";
+import { CheckCircleFilled, HistoryOutlined, CameraOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "src/store/auth-context";
 import useOrder from "src/hooks/Order";
@@ -18,6 +18,7 @@ const OrderPage: FC = () => {
   const { user } = useContext(AuthContext);
   const {
     dispatchOrder,
+    getCocktail,
     getAlcohol,
     getMixer,
     getGarnish,
@@ -25,6 +26,7 @@ const OrderPage: FC = () => {
     getExistingOrder,
     getOrderHistory,
     cancelOrder,
+    cocktail,
     alcohol,
     mixer,
     garnish,
@@ -41,6 +43,7 @@ const OrderPage: FC = () => {
   const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
   const routerNav = useNavigate();
 
+  const cocktailMemo = useMemo(() => cocktail, [cocktail]);
   const alcoholMemo = useMemo(() => alcohol, [alcohol]);
   const mixerMemo = useMemo(() => mixer, [mixer]);
   const garnishMemo = useMemo(() => garnish, [garnish]);
@@ -50,6 +53,7 @@ const OrderPage: FC = () => {
   const handleSubmitDrink = (drink: DrinkType) => {
     dispatchOrder({ type: "ADD_DRINK", payload: drink });
     setShowOrderDrawer(false);
+    message.success("Drink added to order");
   };
 
   const handleRemoveDrink = (index: number) => {
@@ -82,14 +86,25 @@ const OrderPage: FC = () => {
 
   const handleReorderDrink = (drink: DrinkType) => {
     dispatchOrder({ type: "ADD_DRINK", payload: drink });
+    setShowHistoryDrawer(false);
     message.success("Drink added to order");
   };
 
   useEffect(() => {
+    if (cocktailMemo.length === 0) getCocktail();
     if (alcoholMemo.length === 0) getAlcohol();
     if (mixerMemo.length === 0) getMixer();
     if (garnishMemo.length === 0) getGarnish();
-  }, [alcoholMemo.length, garnishMemo.length, getAlcohol, getGarnish, getMixer, mixerMemo.length]);
+  }, [
+    cocktailMemo.length,
+    alcoholMemo.length,
+    garnishMemo.length,
+    getCocktail,
+    getAlcohol,
+    getGarnish,
+    getMixer,
+    mixerMemo.length,
+  ]);
 
   useEffect(() => {
     getExistingOrder();
@@ -101,12 +116,18 @@ const OrderPage: FC = () => {
       <div className="header">
         <h1>Join Us For a Drink!</h1>
         <p>
-          <strong>First</strong> create your order
+          <strong>First</strong> complete your drink order
         </p>
         <p>
           <strong>Then</strong> scan your QR code at the bar.
         </p>
         <p>Be sure to post more photos to get more drink passes.</p>
+        <br />
+        <div className="action-container">
+          <Button type="default" onClick={() => routerNav("/photo-upload")} icon={<CameraOutlined />}>
+            Post a Photo
+          </Button>
+        </div>
       </div>
       <div className="virtual-hostess">
         <Divider>
@@ -119,22 +140,23 @@ const OrderPage: FC = () => {
           <div className="order-actions">
             <Button
               type="primary"
+              icon={<span className="drink-icon" />}
               onClick={() => {
                 setShowOrderDrawer(true);
               }}
               disabled={user.tickets === 0 || (user.tickets > 0 && ticketsPending >= user.tickets)}
             >
-              Order
-              <RocketOutlined />
+              {order.length > 0 && <span>Add a Drink</span>}
+              {order.length === 0 && <span>Order a Drink</span>}
             </Button>
             <Button
               type="primary"
+              icon={<HistoryOutlined />}
               onClick={() => {
                 setShowHistoryDrawer(true);
               }}
             >
-              History
-              <HistoryOutlined />
+              Order History
             </Button>
           </div>
         )}
@@ -142,21 +164,20 @@ const OrderPage: FC = () => {
           <div className="qr-code">
             {orderLoaded?.completedBy && <CheckCircleFilled />}
             <img src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${orderId}`} alt="qr code" />
-            <h3>Scan this QR code at the bar</h3>
+            <h3>Scan QR code at the bar</h3>
           </div>
         )}
         {user.tickets === 0 && (
           <div className="no-tickets">
             <p>Upload more photos to get more drink passes.</p>
-            <Button onClick={() => routerNav("/photo-upload")}>Upload Photos</Button>
+            <Button onClick={() => routerNav("/photo-upload")} icon={<CameraOutlined />}>
+              Post a Photo
+            </Button>
           </div>
         )}
         <DrinkList order={order} removeAction={handleRemoveDrink} showAction={!orderId} />
         {order.length > 0 && !orderId && (
-          <div className="order-actions">
-            <Button size="large" onClick={handleCancelOrder} loading={isSaving}>
-              Cancel Order
-            </Button>
+          <div className="order-actions wide">
             <Button type="primary" size="large" onClick={handleCompleteOrder} loading={isSaving}>
               Complete Order
             </Button>
@@ -170,9 +191,10 @@ const OrderPage: FC = () => {
           </div>
         )}
       </div>
-      <Drawer title="Create a Drink" open={showOrderDrawer} onClose={() => setShowOrderDrawer(false)} destroyOnClose>
+      <Drawer title="Order a Cocktail" open={showOrderDrawer} onClose={() => setShowOrderDrawer(false)} destroyOnClose>
         <DrinkForm
           submitDrink={handleSubmitDrink}
+          cocktail={cocktailMemo}
           alcohol={alcoholMemo}
           mixer={mixerMemo}
           garnish={garnishMemo}

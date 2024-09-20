@@ -2,6 +2,7 @@ import React from "react";
 import type { FC } from "react";
 import { v4 as uuid } from "uuid";
 import { Button, Divider } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import type { OrderType, DrinkType } from "src/hooks/Order";
 import Drink from "src/pages/OrderPage/Drink";
 
@@ -28,6 +29,7 @@ const OrderHistory: FC<OrderHistoryProps> = ({ orderHistory, reorderAction, tick
           <div className="drink" key={uuid()}>
             <Drink drink={drink} />
             <Button onClick={() => reorderAction(drink)} disabled={!hasTicketsForDrink(drink, ticketsRemaining)}>
+              <PlusOutlined />
               Add to Order
             </Button>
           </div>

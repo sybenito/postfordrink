@@ -75,6 +75,7 @@ h3 {
   background-color: $red-2;
   border-color: $red-2;
   color: $gold;
+  font-weight: $font-weight-bold;
   &:not(:disabled):not(.ant-btn-disabled):hover {
     background-color: $red-2;
     border-color: $red-2;
@@ -97,6 +98,7 @@ h3 {
     }
     .drink-item .item{
       margin-bottom: 0.5rem;
+      padding-right: 45px;
     }
   }
 }
@@ -107,5 +109,35 @@ h3 {
     justify-content: center;
     align-items: center;
   }
-  padding-bottom: 100px;
+  padding-bottom: 350px;
+}
+
+.ant-float-btn-default .ant-float-btn-body {
+  background: $black;
+  border: 1px solid;
+}
+.ant-btn-default {
+  background: transparent;
+  font-weight: $font-weight-bold;
+  &:hover {
+    background: $white;
+  }
+}
+
+.ant-drawer {
+  .ant-drawer-content {
+    background: $gray-bg;
+  }
+}
+
+.drink-icon {
+  margin-bottom: -2px;
+  min-width: 15px;
+  min-height: 15px;
+  display: inline-block;
+  background: url('./svg/drink-icon.svg');
+  background-size: cover;
+  background-color: transparent;
+  color: $gold;
+  background-position: top left;
 }

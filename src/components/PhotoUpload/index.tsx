@@ -2,7 +2,8 @@ import React, { useState, useContext } from "react";
 import type { FC } from "react";
 import type { UploadRequestOption, RcFile } from "rc-upload/lib/interface";
 import { CameraOutlined, PlusOutlined } from "@ant-design/icons";
-import { Upload, Modal, Divider } from "antd";
+import { Upload, Modal, Divider, Button } from "antd";
+import { useNavigate } from "react-router-dom";
 import ImgCrop from "antd-img-crop";
 import AuthContext from "src/store/auth-context";
 import type { AuthContextType } from "src/hooks/Auth";
@@ -20,6 +21,7 @@ const PhotoUpload: FC = () => {
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPhotoComment(e.target.value);
   };
+  const routerNav = useNavigate();
 
   const handleUploadPhoto = async (file: RcFile | string | Blob) => {
     if (user) {
@@ -53,10 +55,14 @@ const PhotoUpload: FC = () => {
       <div className="intro">
         <h1>Post a Photo! Join Us For a Drink.</h1>
         <p>
-          Our bar is <strong>open</strong> for our guests. In exchange for one drink pass, we ask for one photo post.
-          There is no limit to this as long as our bar is still standing.
+          Our bar is <strong>open</strong> for our guests. In exchange for each drink pass, we ask for one photo post.
         </p>
-        <p>All approved photos will end up in the photo feed, so lets see those big smiles! </p>
+        <br />
+        <div className="action-container">
+          <Button type="default" onClick={() => routerNav("/order")} icon={<span className="drink-icon" />}>
+            Order a Drink
+          </Button>
+        </div>
       </div>
       <Divider />
       {fb && (
@@ -97,8 +103,8 @@ const PhotoUpload: FC = () => {
         title="Cancel Photo Upload"
         open={isCancelModalVisible}
         onOk={handleCancel}
-        okText="Yes, Cancel Upload"
-        cancelText="No, Keep This Photo"
+        okText="Cancel Upload"
+        cancelText="Keep This Photo"
         onCancel={() => setIsCancelModalVisible(false)}
       >
         <p>Are you sure you want to cancel this photo upload?</p>

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import type { FC } from "react";
 import { Drawer, Button, Form, Input, Checkbox, Space, Table, TableProps } from "antd";
-import useOrder, { AlcoholType, MixerType, GarnishType } from "src/hooks/Order";
+import useOrder, { AlcoholType, MixerType, GarnishType, CocktailType } from "src/hooks/Order";
 import useAdmin from "src/hooks/Admin";
 
 import "src/pages/AdminPage/barTab.scss";
 
-type StockType = "ALCOHOL" | "MIXER" | "GARNISH";
+type StockType = "COCKTAIL" | "ALCOHOL" | "MIXER" | "GARNISH";
 
-const optionsColumns: TableProps<AlcoholType | MixerType | GarnishType>["columns"] = [
+const optionsColumns: TableProps<CocktailType | AlcoholType | MixerType | GarnishType>["columns"] = [
   {
     title: "Name",
     dataIndex: "name",
@@ -37,16 +37,27 @@ const BarTab: FC = () => {
   const [isDrawerVisible, setIsDrawerVisible] = useState<boolean>(false);
   const [stockType, setStockType] = useState<StockType>();
   const [selectedStock, setSelectedStock] = useState<AlcoholType | MixerType | GarnishType>();
-  const { getAlcohol, getMixer, getGarnish, alcohol, mixer, garnish } = useOrder();
-  const { isSaving, addAlcohol, addMixer, addGarnish, updateAlcohol, updateGarnish, updateMixer } = useAdmin();
+  const { getCocktail, getAlcohol, getMixer, getGarnish, cocktail, alcohol, mixer, garnish } = useOrder();
+  const {
+    isSaving,
+    addCocktail,
+    addAlcohol,
+    addMixer,
+    addGarnish,
+    updateCocktail,
+    updateAlcohol,
+    updateGarnish,
+    updateMixer,
+  } = useAdmin();
 
   useEffect(() => {
+    getCocktail();
     getAlcohol();
     getMixer();
     getGarnish();
-  }, [getAlcohol, getMixer, getGarnish]);
+  }, [getCocktail, getAlcohol, getMixer, getGarnish]);
 
-  const openDrawer = (type: StockType, stock?: AlcoholType | MixerType | GarnishType) => {
+  const openDrawer = (type: StockType, stock?: CocktailType | AlcoholType | MixerType | GarnishType) => {
     if (stock) setSelectedStock(stock);
     setStockType(type);
     setIsDrawerVisible(true);
@@ -55,6 +66,7 @@ const BarTab: FC = () => {
 
   const handleCancel = () => {
     setTimeout(() => {
+      getCocktail();
       getAlcohol();
       getMixer();
       getGarnish();
@@ -66,9 +78,21 @@ const BarTab: FC = () => {
   };
 
   const handleSubmit = (e: object) => {
-    const { name, canDouble, available } = e as AlcoholType & MixerType & GarnishType;
-    let formData: AlcoholType | MixerType | GarnishType;
+    const { name, canDouble, available, description } = e as CocktailType & AlcoholType & MixerType & GarnishType;
+    let formData: CocktailType | AlcoholType | MixerType | GarnishType;
     switch (stockType) {
+      case "COCKTAIL":
+        formData = {
+          name,
+          description: description || "",
+          available: available || false,
+        };
+
+        if (selectedStock?.id) {
+          formData.id = selectedStock.id;
+          updateCocktail(formData);
+        } else addCocktail(formData);
+        break;
       case "ALCOHOL":
         formData = {
           name,
@@ -118,6 +142,11 @@ const BarTab: FC = () => {
       <Form.Item name="name" label="Name" rules={[{ required: true }]}>
         <Input maxLength={50} disabled={isSaving} />
       </Form.Item>
+      {stockType === "COCKTAIL" && (
+        <Form.Item name="description" label="Description" rules={[{ required: true }]}>
+          <Input maxLength={200} disabled={isSaving} />
+        </Form.Item>
+      )}
       {stockType === "ALCOHOL" && (
         <Form.Item name="canDouble" label="Can Double" valuePropName="checked">
           <Checkbox disabled={isSaving} />
@@ -131,6 +160,20 @@ const BarTab: FC = () => {
 
   return (
     <div className="bar-stock-editor">
+      <div className="table-section">
+        <h3>Cocktails Menu</h3>
+        <Table
+          columns={optionsColumns}
+          dataSource={cocktail}
+          rowKey="id"
+          pagination={false}
+          loading={isSaving}
+          onRow={(record) => ({
+            onClick: () => openDrawer("COCKTAIL", record),
+          })}
+        />
+        <Button onClick={() => openDrawer("COCKTAIL")}>Add Cocktail</Button>
+      </div>
       <div className="table-section">
         <h3>Alcohol Stock</h3>
         <Table

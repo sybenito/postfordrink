@@ -1,5 +1,6 @@
 const PRIMARY_TEXT = "#bfa75d"; // gold
 const PRIMARY_BG = "#670404"; // red
+const PRIMARY_GRAY = "#9e9e9e";
 
 const THEME_CONFIG = {
   token: {
@@ -20,16 +21,16 @@ const THEME_CONFIG = {
     },
     Input: {
       colorPrimary: PRIMARY_BG,
-      colorBorder: PRIMARY_BG,
+      colorBorder: PRIMARY_GRAY,
       colorPrimaryBgHover: PRIMARY_BG,
       colorPrimaryHover: PRIMARY_BG,
       colorText: PRIMARY_BG,
-      defaultBorderColor: PRIMARY_BG,
+      defaultBorderColor: PRIMARY_TEXT,
       defaultColor: PRIMARY_BG,
     },
     Select: {
       colorPrimary: PRIMARY_BG,
-      colorBorder: PRIMARY_BG,
+      colorBorder: PRIMARY_GRAY,
       colorPrimaryBgHover: PRIMARY_BG,
       colorPrimaryHover: PRIMARY_BG,
       colorText: PRIMARY_BG,

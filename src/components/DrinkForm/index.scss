@@ -1,0 +1,16 @@
+@import "src/styles/variables.scss";
+
+.drink-form {
+  .stack{
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+    .ant-form-item {
+      width: 100%;
+    }
+    width: 100%;
+  }
+  .cocktail-desc {
+    margin-bottom: 30px;
+  }
+}

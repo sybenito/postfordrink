@@ -1,7 +1,7 @@
 @use "src/styles/variables" as *;
 
 .photo-upload {
-  padding: 5px 0 50px 0;
+  padding: 5px 20px 50px 20px;
   .action {
     display: flex;
     justify-content: center;
@@ -18,5 +18,19 @@
   }
   .intro {
     margin-bottom: 50px;
+    .action-container {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+    }
   }
+  .ant-upload-select {
+    color: $gold;
+  }
+}
+
+@media (min-width: 768px) {
+.photo-upload {
+  padding: 5px 0 50px 0;
+}
 }

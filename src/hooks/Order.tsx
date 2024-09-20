@@ -16,6 +16,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { message } from "antd";
+import sound from "src/ding.mp3";
 import type { UserType } from "src/models/user";
 import AuthContext from "src/store/auth-context";
 
@@ -38,9 +39,17 @@ interface GarnishType {
   available?: boolean;
 }
 
+interface CocktailType {
+  id?: string;
+  name: string;
+  available?: boolean;
+  description: string;
+}
+
 type OrderUserType = Omit<UserType, "type" | "tickets">;
 
 interface DrinkType {
+  cocktail: CocktailType | null;
   alcohol: AlcoholType | null;
   mixer: MixerType[];
   garnish: GarnishType[];
@@ -77,6 +86,7 @@ const useOrder = () => {
   const [isOrderLoading, setIsOrderLoading] = useState<boolean>(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(false);
   const [orderHistory, setOrderHistory] = useState<OrderType[]>([]);
+  const [cocktail, setCocktail] = useState<CocktailType[]>([]);
   const [alcohol, setAlcohol] = useState<AlcoholType[]>([]);
   const [mixer, setMixer] = useState<MixerType[]>([]);
   const [garnish, setGarnish] = useState<GarnishType[]>([]);
@@ -86,6 +96,11 @@ const useOrder = () => {
   const [orderId, setOrderId] = useState<string | null>(null);
 
   const db = getFirestore();
+
+  const playSound = (url: string) => {
+    const audio = new Audio(url);
+    audio.play();
+  };
 
   const getExistingOrder = useCallback(() => {
     const orderQuery = query(
@@ -128,6 +143,8 @@ const useOrder = () => {
               if (navigator.vibrate) {
                 navigator.vibrate(100);
               }
+
+              playSound(sound);
             } else {
               setOrderLoaded(orderData);
             }
@@ -165,6 +182,7 @@ const useOrder = () => {
           return;
         }
         const orderData = snapshot.data() as OrderType;
+        playSound(sound);
         setOrderLoaded(orderData);
       })
       .catch((e) => {
@@ -250,6 +268,28 @@ const useOrder = () => {
         console.error(e);
       });
   }, [orderId, db]);
+
+  const getCocktail = useCallback(() => {
+    const cocktailQuery = query(collection(db, "cocktail_type"));
+    const cocktailList: CocktailType[] = [];
+
+    getDocs(cocktailQuery)
+      .then((snapshot) => {
+        snapshot.docs.forEach((d) => {
+          const newCocktail: CocktailType = {
+            id: d.id,
+            name: d.data().name,
+            available: d.data().available,
+            description: d.data().description,
+          };
+
+          cocktailList.push(newCocktail);
+        });
+
+        setCocktail(cocktailList);
+      })
+      .catch((e) => console.error(e));
+  }, [db]);
 
   const getAlcohol = useCallback(() => {
     const alcoholQuery = query(collection(db, "alcohol_type"));
@@ -352,6 +392,7 @@ const useOrder = () => {
   }, [order]);
 
   return {
+    getCocktail,
     getAlcohol,
     getMixer,
     getGarnish,
@@ -365,6 +406,8 @@ const useOrder = () => {
     setOrderLoaded,
     completeOrderLoaded,
     cancelOrderLoaded,
+    playSound,
+    cocktail,
     alcohol,
     mixer,
     garnish,
@@ -380,4 +423,4 @@ const useOrder = () => {
 };
 
 export default useOrder;
-export type { DrinkType, AlcoholType, MixerType, GarnishType, OrderType };
+export type { DrinkType, AlcoholType, MixerType, GarnishType, OrderType, CocktailType };

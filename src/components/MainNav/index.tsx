@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import type { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { FloatButton } from "antd";
-import { HomeOutlined, CameraOutlined, RocketOutlined, UsergroupAddOutlined } from "@ant-design/icons";
+import { HomeOutlined, CameraOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 import { UserTypeEnum } from "src/models/user";
 import AuthContext from "src/store/auth-context";
 
@@ -37,7 +37,7 @@ const MainNav: FC = () => {
       },
       {
         name: "Order",
-        icon: <RocketOutlined />,
+        icon: <span className="drink-icon" />,
         action: () => navigate("/order"),
       },
     ],
@@ -61,7 +61,7 @@ const MainNav: FC = () => {
       },
       {
         name: "Order",
-        icon: <RocketOutlined />,
+        icon: <span className="drink-icon" />,
         action: () => navigate("/order"),
       },
       {
@@ -83,10 +83,7 @@ const MainNav: FC = () => {
 
   return (
     <div id="main-nav">
-      <FloatButton.Group>
-        {renderNav()}
-        <FloatButton.BackTop />
-      </FloatButton.Group>
+      <FloatButton.Group>{renderNav()}</FloatButton.Group>
     </div>
   );
 };

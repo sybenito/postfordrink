@@ -23,6 +23,7 @@
     align-items: center;
     h1 {
       margin-right: 0.5rem;
+      font-size: 1.4rem;
     }
   }
   .login-action {
@@ -32,5 +33,15 @@
   }
   .user-name {
     color: $pink;
+  }
+}
+
+@media (min-width: 410px) {
+  .app-header {
+    .logo {
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
   }
 }

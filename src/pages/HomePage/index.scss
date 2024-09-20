@@ -4,9 +4,18 @@
   display: flex;
   justify-content: center;
   .feed-container {
-    width: 450px;
+    width: 95%;
     .welcome-message {
       margin-bottom: 2rem;
     }
   }
 }
+
+@media (min-width: 768px) {
+  #home-page {
+    .feed-container {
+      width: 700px;
+    }
+  }
+}
+

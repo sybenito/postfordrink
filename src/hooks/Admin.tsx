@@ -1,12 +1,53 @@
 import { useState, useCallback } from "react";
 import { getFirestore, doc, addDoc, collection, updateDoc } from "firebase/firestore";
 import { message } from "antd";
-import type { AlcoholType, MixerType, GarnishType } from "./Order";
+import type { AlcoholType, MixerType, GarnishType, CocktailType } from "./Order";
 
 const useAdmin = () => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const db = getFirestore();
+
+  const addCocktail = useCallback(
+    (cocktail: CocktailType) => {
+      const collectionRef = collection(db, "cocktail_type");
+
+      setIsSaving(true);
+      addDoc(collectionRef, cocktail)
+        .then(() => {
+          message.success("Cocktail saved successfully", 3);
+        })
+        .catch((e) => {
+          message.error("There was an issue saving Cocktail", 5);
+          console.error(e);
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
+    },
+    [db]
+  );
+
+  const updateCocktail = useCallback(
+    (cocktail: CocktailType) => {
+      const docRef = doc(db, "cocktail_type", cocktail.id as string);
+      if (cocktail) {
+        setIsSaving(true);
+        updateDoc(docRef, { ...cocktail })
+          .then(() => {
+            message.success("Cocktail updated successfully", 3);
+          })
+          .catch((e) => {
+            message.error("There was an issue saving Cocktail", 5);
+            console.error(e);
+          })
+          .finally(() => {
+            setIsSaving(false);
+          });
+      }
+    },
+    [db]
+  );
 
   const addAlcohol = useCallback(
     (alcohol: AlcoholType) => {
@@ -139,6 +180,8 @@ const useAdmin = () => {
     updateMixer,
     addGarnish,
     updateGarnish,
+    addCocktail,
+    updateCocktail,
   };
 };
 
