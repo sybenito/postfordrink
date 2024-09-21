@@ -31,6 +31,11 @@ const PhotoFeed: FC<PhotoFeedProps> = ({ user }) => {
   };
 
   useEffect(() => {
+    const reloadPhotos = photos.slice(0, photosLoaded.length);
+    setPhotosLoaded(reloadPhotos);
+  }, [photos]);
+
+  useEffect(() => {
     getPhotos(user);
   }, [getPhotos, user]);
 
