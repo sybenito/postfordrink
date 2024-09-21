@@ -15,6 +15,7 @@ import {
   updateDoc,
   onSnapshot,
   orderBy,
+  where,
 } from "firebase/firestore";
 import { message } from "antd";
 import type { DocumentData } from "firebase/firestore";
@@ -49,22 +50,36 @@ const usePhoto = () => {
   const [haveNewPhotos, setHaveNewPhotos] = useState<boolean>(false);
   const db = getFirestore();
 
-  const getPhotos = useCallback(async () => {
-    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-    setIsPhotoLoading(true);
+  const getPhotos = useCallback(
+    (user?: UserType) => {
+      let q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+      if (user) q = query(q, where("createdBy.id", "==", user.id));
 
-    getDocs(q)
-      .then((querySnapshot) => {
-        setPhotos(querySnapshot.docs);
-      })
-      .catch((e) => {
-        console.error(e);
-      })
-      .finally(() => {
-        setIsPhotoLoading(false);
-        setHaveNewPhotos(false);
-      });
-  }, [db]);
+      setIsPhotoLoading(true);
+
+      const unsubscribe = onSnapshot(
+        q,
+        (querySnapshot) => {
+          setPhotos(querySnapshot.docs);
+          setIsPhotoLoading(false);
+          setHaveNewPhotos(false);
+        },
+        (error) => {
+          console.error(error);
+          setIsPhotoLoading(false);
+        }
+      );
+
+      // Clean up the listener when the component unmounts
+      return () => unsubscribe();
+    },
+    [db]
+  );
+
+  useEffect(() => {
+    const unsubscribe = getPhotos();
+    return () => unsubscribe();
+  }, [getPhotos]);
 
   const createPhotoMetadata = useCallback(
     async (user: UserType) => {

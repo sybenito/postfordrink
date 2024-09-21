@@ -38,7 +38,7 @@ const BartenderPage: FC = () => {
   return (
     <div className="bar-page">
       <div className="header">
-        <h1>
+        <h1 className="small">
           Hello, {user.name}.<br />
           Let&apos;s Rock n Roll.
         </h1>

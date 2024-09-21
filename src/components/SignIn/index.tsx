@@ -8,6 +8,8 @@ import { message } from "antd";
 import RegisterEmail from "src/components/RegisterEmail";
 import type { RegistrationType } from "src/components/RegisterEmail";
 
+import "./index.scss";
+
 import "firebaseui/dist/firebaseui.css";
 
 // Configure FirebaseUI.

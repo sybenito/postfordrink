@@ -26,7 +26,7 @@ const HomePage: FC = () => {
     {
       key: "2",
       label: "Your Posts",
-      children: <PhotoFeed />,
+      children: <PhotoFeed user={authContext.user} />,
     },
   ];
 

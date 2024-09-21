@@ -4,16 +4,21 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Spin, Button, Affix, Empty } from "antd";
 import { NotificationOutlined } from "@ant-design/icons";
 import { DocumentData } from "firebase/firestore";
+import { UserType } from "src/models/user";
 import usePhoto from "src/hooks/Photo";
 import Photo from "src/components/PhotoFeed/Photo";
 
 import "src/components/PhotoFeed/index.scss";
 
+interface PhotoFeedProps {
+  user?: UserType;
+}
+
 const PHOTO_BASE_PATH = "photos/resized/450/";
 const PHOTO_POSTFIX = "_450x450";
 const SCROLL_DATA_LENGTH = 3;
 
-const PhotoFeed: FC = () => {
+const PhotoFeed: FC<PhotoFeedProps> = ({ user }) => {
   const { getPhotos, photos, isPhotoLoading, toggleLike, haveNewPhotos } = usePhoto();
   const [photosLoaded, setPhotosLoaded] = useState<DocumentData[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -27,15 +32,21 @@ const PhotoFeed: FC = () => {
   };
 
   useEffect(() => {
-    getPhotos();
-  }, [getPhotos]);
+    getPhotos(user);
+  }, [getPhotos, user]);
 
   useEffect(() => {
     if (photos.length > 0 && photosLoaded.length === 0) {
       setPhotosLoaded(photos.slice(photosLoaded.length, photosLoaded.length + SCROLL_DATA_LENGTH));
     }
   }, [photos, photosLoaded]);
-
+  /*
+  useEffect(() => {
+    if (haveNewPhotos) {
+      getPhotos(user);
+    }
+  }, [haveNewPhotos, user, getPhotos]);
+*/
   return (
     <div className="photo-feed">
       {isPhotoLoading && <Spin />}
@@ -45,7 +56,7 @@ const PhotoFeed: FC = () => {
           {haveNewPhotos && (
             <div className="new-photos-action">
               <Affix offsetTop={10} offsetBottom={10}>
-                <Button onClick={getPhotos} icon={<NotificationOutlined />}>
+                <Button onClick={() => getPhotos(user)} icon={<NotificationOutlined />}>
                   New Photos!
                 </Button>
               </Affix>

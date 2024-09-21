@@ -28,6 +28,10 @@ h1 {
   font-size: 1.8rem;
   font-weight: $font-weight;
   color: $gold;
+  &.small {
+    margin-top: 0;
+    font-size: 1.2rem;
+  }
 }
 
 h2 {

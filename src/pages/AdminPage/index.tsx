@@ -26,7 +26,7 @@ const AdminPage: FC = () => {
   return (
     <div className="admin-page content-section">
       <div className="header">
-        <h1>
+        <h1 className="small">
           Hello, {user.name}.<br />
           Let&apos;s Admin
         </h1>
