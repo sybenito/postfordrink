@@ -7,7 +7,6 @@ import {
   getFirestore,
   doc,
   setDoc,
-  getDocs,
   serverTimestamp,
   FieldValue,
   query,
@@ -47,7 +46,6 @@ const usePhoto = () => {
   const [photoComment, setPhotoComment] = useState<string>("");
   const [photoId, setPhotoId] = useState<string>(uuid());
   const [photos, setPhotos] = useState<DocumentData[]>([]);
-  const [haveNewPhotos, setHaveNewPhotos] = useState<boolean>(false);
   const db = getFirestore();
 
   const getPhotos = useCallback(
@@ -62,7 +60,6 @@ const usePhoto = () => {
         (querySnapshot) => {
           setPhotos(querySnapshot.docs);
           setIsPhotoLoading(false);
-          setHaveNewPhotos(false);
         },
         (error) => {
           console.error(error);
@@ -70,7 +67,6 @@ const usePhoto = () => {
         }
       );
 
-      // Clean up the listener when the component unmounts
       return () => unsubscribe();
     },
     [db]
@@ -146,13 +142,6 @@ const usePhoto = () => {
     setPhotoId(uuid());
   };
 
-  useEffect(() => {
-    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-    onSnapshot(q, (querySnapshot) => {
-      if (querySnapshot.docs.length > photos.length && photos.length > 0) setHaveNewPhotos(true);
-    });
-  }, [photos, db]);
-
   return {
     photoComment,
     setPhotoComment,
@@ -162,7 +151,6 @@ const usePhoto = () => {
     resetPhotoId,
     getPhotos,
     toggleLike,
-    haveNewPhotos,
     photos,
     isPhotoLoading,
   };

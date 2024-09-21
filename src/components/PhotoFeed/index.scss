@@ -48,22 +48,4 @@ h3 {
     justify-content: center;
     margin-bottom: $gutter-lg;
   }
-  .new-photos-action {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    z-index: 1000;
-    top: 100px;
-    .ant-btn {
-      border-radius: 1.2rem;
-      font-weight: $font-weight-bold;
-      display: flex;
-      align-items: center;
-      padding: 1.2rem;
-      .anticon {
-        font-size: 1.2rem;
-        font-weight: $font-weight-bold;
-      }
-    }
-  }
 }

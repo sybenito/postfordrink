@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { FC } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Spin, Button, Affix, Empty } from "antd";
-import { NotificationOutlined } from "@ant-design/icons";
+import { Spin, Button, Empty } from "antd";
 import { DocumentData } from "firebase/firestore";
 import { UserType } from "src/models/user";
 import usePhoto from "src/hooks/Photo";
@@ -19,7 +18,7 @@ const PHOTO_POSTFIX = "_450x450";
 const SCROLL_DATA_LENGTH = 3;
 
 const PhotoFeed: FC<PhotoFeedProps> = ({ user }) => {
-  const { getPhotos, photos, isPhotoLoading, toggleLike, haveNewPhotos } = usePhoto();
+  const { getPhotos, photos, isPhotoLoading, toggleLike } = usePhoto();
   const [photosLoaded, setPhotosLoaded] = useState<DocumentData[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
@@ -40,48 +39,31 @@ const PhotoFeed: FC<PhotoFeedProps> = ({ user }) => {
       setPhotosLoaded(photos.slice(photosLoaded.length, photosLoaded.length + SCROLL_DATA_LENGTH));
     }
   }, [photos, photosLoaded]);
-  /*
-  useEffect(() => {
-    if (haveNewPhotos) {
-      getPhotos(user);
-    }
-  }, [haveNewPhotos, user, getPhotos]);
-*/
+
   return (
     <div className="photo-feed">
       {isPhotoLoading && <Spin />}
       {!isPhotoLoading && photosLoaded.length === 0 && <Empty description={false} />}
       {!isPhotoLoading && photosLoaded.length > 0 && (
-        <>
-          {haveNewPhotos && (
-            <div className="new-photos-action">
-              <Affix offsetTop={10} offsetBottom={10}>
-                <Button onClick={() => getPhotos(user)} icon={<NotificationOutlined />}>
-                  New Photos!
-                </Button>
-              </Affix>
-            </div>
-          )}
-          <div className="feed-container">
-            <InfiniteScroll
-              dataLength={SCROLL_DATA_LENGTH}
-              next={fetchMorePhotos}
-              hasMore={hasMore}
-              loader={
-                <div className="feed-loader">
-                  <Button onClick={fetchMorePhotos}>Load More ...</Button>
-                </div>
-              }
-              endMessage={<h3 className="feed-end">Thats it! Thats all.</h3>}
-            >
-              {photosLoaded.map((p) => (
-                <div className="item" key={p.id}>
-                  <Photo photo={p} path={PHOTO_BASE_PATH} postfix={PHOTO_POSTFIX} likeAction={handleLikeAction} />
-                </div>
-              ))}
-            </InfiniteScroll>
-          </div>
-        </>
+        <div className="feed-container">
+          <InfiniteScroll
+            dataLength={SCROLL_DATA_LENGTH}
+            next={fetchMorePhotos}
+            hasMore={hasMore}
+            loader={
+              <div className="feed-loader">
+                <Button onClick={fetchMorePhotos}>Load More ...</Button>
+              </div>
+            }
+            endMessage={<h3 className="feed-end">Thats it! Thats all.</h3>}
+          >
+            {photosLoaded.map((p) => (
+              <div className="item" key={p.id}>
+                <Photo photo={p} path={PHOTO_BASE_PATH} postfix={PHOTO_POSTFIX} likeAction={handleLikeAction} />
+              </div>
+            ))}
+          </InfiniteScroll>
+        </div>
       )}
     </div>
   );

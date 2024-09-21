@@ -62,18 +62,6 @@ const OrderPage: FC = () => {
 
   const handleCompleteOrder = () => saveOrder();
 
-  const handleCancelOrder = () => {
-    Modal.confirm({
-      title: "Cancel Order",
-      content: "Are you sure you want to cancel this order?",
-      okText: "Yes, Cancel",
-      cancelText: "No",
-      onOk: () => {
-        dispatchOrder({ type: "RESET_ORDER", payload: null });
-      },
-    });
-  };
-
   const handleCancelOrderLoaded = () => {
     Modal.confirm({
       title: "Cancel Order",
@@ -219,3 +207,17 @@ const OrderPage: FC = () => {
 };
 
 export default OrderPage;
+
+/*
+  const handleCancelOrder = () => {
+    Modal.confirm({
+      title: "Cancel Order",
+      content: "Are you sure you want to cancel this order?",
+      okText: "Yes, Cancel",
+      cancelText: "No",
+      onOk: () => {
+        dispatchOrder({ type: "RESET_ORDER", payload: null });
+      },
+    });
+  };
+  */
