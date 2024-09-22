@@ -134,6 +134,22 @@ h3 {
   }
 }
 
+.ant-modal{
+  .ant-modal-content {
+    border: 1px solid $red-2;
+    .anticon-close {
+      color: $gold;
+    }
+    }
+}
+
+.ant-switch {
+  border: 1px solid $gold;
+  .ant-switch-handle::before {
+    margin-top: -2px;
+  }
+}
+
 .drink-icon {
   margin-bottom: -2px;
   min-width: 15px;

@@ -15,7 +15,7 @@ interface PhotoFeedProps {
 
 const PHOTO_BASE_PATH = "photos/resized/450/";
 const PHOTO_POSTFIX = "_450x450";
-const SCROLL_DATA_LENGTH = 3;
+const SCROLL_DATA_LENGTH = 20;
 
 const PhotoFeed: FC<PhotoFeedProps> = ({ user }) => {
   const { getPhotos, photos, isPhotoLoading, toggleLike } = usePhoto();
@@ -31,9 +31,11 @@ const PhotoFeed: FC<PhotoFeedProps> = ({ user }) => {
   };
 
   useEffect(() => {
-    const reloadPhotos = photos.slice(0, photosLoaded.length);
-    setPhotosLoaded(reloadPhotos);
-  }, [photos]);
+    setTimeout(() => {
+      const reloadPhotos = photos.slice(0, photosLoaded.length);
+      setPhotosLoaded(reloadPhotos);
+    }, 5000);
+  }, [photos, photosLoaded]);
 
   useEffect(() => {
     getPhotos(user);

@@ -16,6 +16,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { message } from "antd";
+import { v4 as uuid } from "uuid";
 import sound from "src/ding.mp3";
 import type { UserType } from "src/models/user";
 import AuthContext from "src/store/auth-context";
@@ -58,12 +59,16 @@ interface DrinkType {
 }
 
 interface OrderType {
+  id: string;
   createdBy: OrderUserType;
-  createdAt: FieldValue | null;
+  createdAt: FieldValue;
   drinks: DrinkType[];
-  status: "pending" | "completed" | "cancelled";
+  status: OrderTypeStatus;
   completedBy?: OrderUserType;
+  updatedAt: FieldValue;
 }
+
+type OrderTypeStatus = "new" | "pending" | "completed" | "cancelled";
 
 const reduceOrder = (state: DrinkType[], action: { type: string; payload: DrinkType | number | null }) => {
   switch (action.type) {
@@ -94,6 +99,8 @@ const useOrder = () => {
   const [orderLoaded, setOrderLoaded] = useState<OrderType | null>(null);
   const [ticketsPending, setTicketsPending] = useState<number>(0);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [newOrders, setNewOrders] = useState<OrderType[]>([]);
+  const [completedOrders, setCompletedOrders] = useState<OrderType[]>([]);
 
   const db = getFirestore();
 
@@ -101,6 +108,104 @@ const useOrder = () => {
     const audio = new Audio(url);
     audio.play();
   };
+
+  const getOrders = useCallback(
+    (status: OrderTypeStatus) => {
+      const sortCrit = status === "completed" ? "updatedAt" : "createdAt";
+      const sortDir = status === "completed" ? "desc" : "asc";
+      let ordersQuery = query(collection(db, "orders"), orderBy(sortCrit, sortDir));
+      if (status) ordersQuery = query(ordersQuery, where("status", "==", status));
+
+      setIsOrderLoading(true);
+
+      onSnapshot(
+        ordersQuery,
+        (querySnapshot) => {
+          const newOrdersList: OrderType[] = [];
+          querySnapshot.docs.forEach((d) => {
+            const data: OrderType = {
+              id: d.id,
+              createdBy: d.data().createdBy,
+              createdAt: d.data().createdAt,
+              drinks: d.data().drinks,
+              status: d.data().status,
+              completedBy: d.data().completedBy,
+              updatedAt: d.data().updatedAt,
+            };
+
+            newOrdersList.push(data as OrderType);
+          });
+
+          if (status === "completed") setCompletedOrders(newOrdersList);
+          else setNewOrders(newOrdersList);
+        },
+        (error) => console.error(error),
+        () => setIsOrderLoading(false)
+      );
+    },
+    [db]
+  );
+
+  const getPendingOrder = useCallback(() => {
+    const orderQuery = query(
+      collection(db, "orders"),
+      where("updatedBy.id", "==", user.id),
+      where("status", "==", "pending"),
+      limit(1)
+    );
+
+    setIsOrderLoading(true);
+    onSnapshot(
+      orderQuery,
+      (snapshot) => {
+        if (snapshot.docs.length === 0) {
+          setOrderLoaded(null);
+          return;
+        }
+
+        const d = snapshot.docs[0];
+        const data: OrderType = {
+          id: d.id,
+          createdBy: d.data().createdBy,
+          createdAt: d.data().createdAt,
+          drinks: d.data().drinks,
+          status: d.data().status,
+          completedBy: d.data().completedBy,
+          updatedAt: d.data().updatedAt,
+        };
+
+        setOrderLoaded(data);
+      },
+      (error) => console.error(error),
+      () => setIsOrderLoading(false)
+    );
+  }, [user, db]);
+
+  const updateOrderPending = useCallback(
+    (o: OrderType) => {
+      const docRef = doc(db, "orders", o.id);
+      const updatedStatus = {
+        updatedBy: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          photoURL: user.photoURL,
+        },
+        status: "pending",
+        updatedAt: serverTimestamp(),
+      };
+
+      setIsSaving(true);
+      updateDoc(docRef, updatedStatus)
+        .catch((e) => {
+          console.error(e);
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
+    },
+    [db, user]
+  );
 
   const getExistingOrder = useCallback(() => {
     const orderQuery = query(
@@ -153,12 +258,8 @@ const useOrder = () => {
 
         setOrderLoaded(orderSnapshot);
       })
-      .catch((e) => {
-        console.error(e);
-      })
-      .finally(() => {
-        setIsOrderLoading(false);
-      });
+      .catch((e) => console.error(e))
+      .finally(() => setIsOrderLoading(false));
   }, [user, db]);
 
   const getOrderById = useCallback(async () => {
@@ -220,6 +321,13 @@ const useOrder = () => {
     const docRef = doc(db, "orders", orderId as string);
     const updatedStatus = {
       status: "completed",
+      completedBy: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        photoURL: user.photoURL,
+      },
+      updatedAt: serverTimestamp(),
     };
 
     setIsSaving(true);
@@ -234,11 +342,14 @@ const useOrder = () => {
         message.error("There was an issue completing the order. Please contact the host.", 5);
         console.error(e);
       });
-  }, [orderId, db]);
+  }, [orderId, db, user]);
 
   const cancelOrderLoaded = useCallback(() => {
     const docRef = doc(db, "orders", orderId as string);
-    const updatedStatus = { completedBy: null };
+    const updatedStatus = {
+      status: "cancelled",
+      updatedAt: serverTimestamp(),
+    };
 
     updateDoc(docRef, updatedStatus)
       .then(() => {
@@ -253,7 +364,10 @@ const useOrder = () => {
 
   const cancelOrder = useCallback(() => {
     const docRef = doc(db, "orders", orderId as string);
-    const updatedStatus = { status: "cancelled" };
+    const updatedStatus = {
+      status: "cancelled",
+      updatedAt: serverTimestamp(),
+    };
 
     setIsSaving(true);
     updateDoc(docRef, updatedStatus)
@@ -356,6 +470,7 @@ const useOrder = () => {
   const saveOrder = useCallback(() => {
     const collectionRef = collection(db, "orders");
     const newOrder: OrderType = {
+      id: uuid(),
       createdBy: {
         id: user.id,
         name: user.name,
@@ -364,7 +479,8 @@ const useOrder = () => {
       },
       createdAt: serverTimestamp(),
       drinks: order,
-      status: "pending",
+      status: "new",
+      updatedAt: serverTimestamp(),
     };
 
     setIsSaving(true);
@@ -381,6 +497,31 @@ const useOrder = () => {
         setIsSaving(false);
       });
   }, [order, user, db]);
+
+  const updateOrderStatus = useCallback(
+    (o: OrderType | null, status: OrderTypeStatus) => {
+      if (!o) return;
+      const docRef = doc(db, "orders", o.id);
+      const updatedStatus = {
+        completedBy:
+          status === "new"
+            ? null
+            : {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                photoURL: user.photoURL,
+              },
+        status,
+        updatedAt: serverTimestamp(),
+      };
+
+      updateDoc(docRef, updatedStatus).catch((e) => {
+        console.error(e);
+      });
+    },
+    [db, user]
+  );
 
   useEffect(() => {
     let ticketsTotal = 0;
@@ -403,10 +544,16 @@ const useOrder = () => {
     cancelOrder,
     getOrderById,
     setOrderId,
+    getOrders,
     setOrderLoaded,
     completeOrderLoaded,
     cancelOrderLoaded,
     playSound,
+    newOrders,
+    completedOrders,
+    updateOrderStatus,
+    updateOrderPending,
+    getPendingOrder,
     cocktail,
     alcohol,
     mixer,

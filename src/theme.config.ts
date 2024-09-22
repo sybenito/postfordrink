@@ -1,6 +1,7 @@
 const PRIMARY_TEXT = "#bfa75d"; // gold
 const PRIMARY_BG = "#670404"; // red
 const PRIMARY_GRAY = "#9e9e9e";
+const PRIMARY_BLACK = "#1e1e1e";
 
 const THEME_CONFIG = {
   token: {
@@ -45,6 +46,9 @@ const THEME_CONFIG = {
         colorText: PRIMARY_TEXT,
         defaultBorderColor: PRIMARY_TEXT,
         defaultColor: PRIMARY_TEXT,
+        contentBg: PRIMARY_BLACK,
+        footerBg: PRIMARY_BLACK,
+        headerBg: PRIMARY_BLACK,
       }
   },
 };
