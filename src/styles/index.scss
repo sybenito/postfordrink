@@ -88,6 +88,102 @@ h3 {
   }
 }
 
+.ant-select {
+  .ant-select-arrow {
+    color: $gold;
+  }
+  .ant-select-clear {
+    color: $red-2;
+    font-size: 1.2em;
+    margin-top: -8px;
+    &:hover {
+      color: $gold;
+    }
+  }
+  .anticon-close {
+    color: $gold;
+  }
+  &.ant-select-disabled{
+    opacity: 0.2;
+  }
+}
+.ant-select-dropdown {
+  background: $red-2;
+  .ant-select-item-option {
+    color: $gold;
+    &:hover {
+      background: $red-2;
+    }
+  }
+  .ant-select-item {
+    margin: 1px 0;
+  }
+  .ant-select-item-option-selected {
+    opacity: 0.6;
+  }
+}
+
+.ant-float-btn-default .ant-float-btn-body {
+  background: $black;
+  border: 1px solid;
+}
+.ant-btn-default {
+  background: transparent;
+  font-weight: $font-weight-bold;
+  &:hover {
+    background: $white;
+  }
+}
+
+.ant-drawer {
+  .ant-drawer-content {
+    background: $black;
+  }
+  .ant-drawer-close {
+    color: $gold;
+  }
+}
+
+.ant-modal{
+  .ant-modal-content {
+    border: 1px solid $red-2;
+    .anticon-close {
+      color: $gold;
+    }
+    }
+}
+
+.ant-switch {
+  border: 1px solid $gold;
+  .ant-switch-handle::before {
+    margin-top: -2px;
+  }
+}
+
+.ant-input {
+  &.ant-input-disabled {
+    opacity: 0.2;
+  }
+}
+
+.ant-checkbox {
+.ant-checkbox-inner {
+  background-color: $black;
+}
+}
+
+.drink-icon {
+  margin-bottom: -2px;
+  min-width: 15px;
+  min-height: 15px;
+  display: inline-block;
+  background: url('./svg/drink-icon.svg');
+  background-size: cover;
+  background-color: transparent;
+  color: $gold;
+  background-position: top left;
+}
+
 .drink-list {
   .order-item {
     border: 1px solid $red-2;
@@ -114,50 +210,4 @@ h3 {
     align-items: center;
   }
   padding-bottom: 350px;
-}
-
-.ant-float-btn-default .ant-float-btn-body {
-  background: $black;
-  border: 1px solid;
-}
-.ant-btn-default {
-  background: transparent;
-  font-weight: $font-weight-bold;
-  &:hover {
-    background: $white;
-  }
-}
-
-.ant-drawer {
-  .ant-drawer-content {
-    background: $gray-bg;
-  }
-}
-
-.ant-modal{
-  .ant-modal-content {
-    border: 1px solid $red-2;
-    .anticon-close {
-      color: $gold;
-    }
-    }
-}
-
-.ant-switch {
-  border: 1px solid $gold;
-  .ant-switch-handle::before {
-    margin-top: -2px;
-  }
-}
-
-.drink-icon {
-  margin-bottom: -2px;
-  min-width: 15px;
-  min-height: 15px;
-  display: inline-block;
-  background: url('./svg/drink-icon.svg');
-  background-size: cover;
-  background-color: transparent;
-  color: $gold;
-  background-position: top left;
 }

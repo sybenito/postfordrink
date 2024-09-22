@@ -144,6 +144,7 @@ const DrinkForm: FC<DrinkFormProps> = ({ submitDrink, cocktail, alcohol, mixer, 
             onChange={(value) => {
               dispatchDrink({ type: "SET_COCKTAIL", payload: value });
             }}
+            disabled={!!drink.alcohol || !!drink.mixer.length || !!drink.garnish.length}
           />
         </Form.Item>
         {drink.cocktail && drink.cocktail.description && (
@@ -164,7 +165,7 @@ const DrinkForm: FC<DrinkFormProps> = ({ submitDrink, cocktail, alcohol, mixer, 
       <br />
       <Divider orientation="left">Create a Drink</Divider>
       <Form name="orderDrink" layout="vertical" onFinish={handleSubmit} className="drink-form">
-        <Form.Item name="alcohol" rules={[validationRules.alcoholRequired]}>
+        <Form.Item name="alcohol" rules={[validationRules.optional]}>
           <Select
             placeholder="Start With"
             allowClear
@@ -172,6 +173,7 @@ const DrinkForm: FC<DrinkFormProps> = ({ submitDrink, cocktail, alcohol, mixer, 
             onChange={(value) => {
               dispatchDrink({ type: "SET_ALCOHOL", payload: value });
             }}
+            disabled={!!drink.cocktail}
           />
         </Form.Item>
         {drink.alcohol && drink.alcohol.canDouble === true && (
@@ -197,6 +199,7 @@ const DrinkForm: FC<DrinkFormProps> = ({ submitDrink, cocktail, alcohol, mixer, 
               onChange={(value) => {
                 dispatchDrink({ type: "SET_MIXER", payload: value });
               }}
+              disabled={!!drink.cocktail}
             />
           </Form.Item>
           <Form.Item name="garnish" rules={[validationRules.optional]}>
@@ -208,6 +211,7 @@ const DrinkForm: FC<DrinkFormProps> = ({ submitDrink, cocktail, alcohol, mixer, 
               onChange={(value) => {
                 dispatchDrink({ type: "SET_GARNISH", payload: value });
               }}
+              disabled={!!drink.cocktail}
             />
           </Form.Item>
         </div>
@@ -218,6 +222,7 @@ const DrinkForm: FC<DrinkFormProps> = ({ submitDrink, cocktail, alcohol, mixer, 
             onChange={(e) => {
               dispatchDrink({ type: "SET_REQUEST", payload: e.target.value });
             }}
+            disabled={!!drink.cocktail}
           />
         </Form.Item>
         <Form.Item>
