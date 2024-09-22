@@ -7,6 +7,15 @@
     width: 95%;
     .welcome-message {
       margin-bottom: 2rem;
+      .action-section {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 24px;
+        .ant-btn {
+          margin-top: 2px;
+        }
+      }
     }
   }
 }

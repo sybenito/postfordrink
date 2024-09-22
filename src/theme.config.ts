@@ -1,6 +1,5 @@
 const PRIMARY_TEXT = "#bfa75d"; // gold
 const PRIMARY_BG = "#670404"; // red
-const PRIMARY_GRAY = "#9e9e9e";
 const PRIMARY_BLACK = "#1e1e1e";
 
 const THEME_CONFIG = {
@@ -21,9 +20,11 @@ const THEME_CONFIG = {
       defaultColor: PRIMARY_TEXT,
     },
     Input: {
+      activeBg: PRIMARY_BLACK,
+      hoverBg: PRIMARY_BLACK,
       colorPrimary: PRIMARY_TEXT,
       colorBorder: PRIMARY_TEXT,
-      colorPrimaryBgHover: PRIMARY_BG,
+      colorPrimaryBgHover: PRIMARY_BLACK,
       colorPrimaryHover: PRIMARY_BG,
       colorText: PRIMARY_TEXT,
       defaultBorderColor: PRIMARY_TEXT,

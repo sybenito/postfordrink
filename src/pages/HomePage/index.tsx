@@ -1,7 +1,9 @@
 import React, { useContext } from "react";
 import type { FC } from "react";
-import { Spin, Tabs } from "antd";
+import { Spin, Tabs, Button } from "antd";
 import type { TabsProps } from "antd";
+import { useNavigate } from "react-router-dom";
+import { CameraOutlined } from "@ant-design/icons";
 import SignIn from "src/components/SignIn";
 import AuthContext from "src/store/auth-context";
 import PhotoFeed from "src/components/PhotoFeed";
@@ -16,6 +18,8 @@ const HomePage: FC = () => {
   useAuthProtect().validateAuth();
   const authContext = useContext<AuthContextType>(AuthContext);
   const { isSignedIn } = React.useContext(AuthContext);
+
+  const routerNav = useNavigate();
 
   const tabItems: TabsProps["items"] = [
     {
@@ -38,8 +42,18 @@ const HomePage: FC = () => {
             <div className="welcome-message">
               {authContext.isSignedIn && authContext.user?.name && <h1>Welcome {authContext.user?.name}!</h1>}
               <p>We want to share this moment from your point-of-view.</p>
-              <p>Post a photo and recieve 2 drink passes each photo. Then scan your order at the Bar.</p>
-              <p>Lets capture this moment together.</p>
+              <div className="action-section">
+                <Button type="default" onClick={() => routerNav("/photo-upload")} icon={<CameraOutlined />}>
+                  Post a Photo
+                </Button>
+                <div className="info">Recieve 2 drink passes for each photo.</div>
+              </div>
+              <div className="action-section">
+                <Button type="default" onClick={() => routerNav("/order")} icon={<span className="drink-icon" />}>
+                  Order a Drink
+                </Button>
+                <div className="info">App orders will be made priority at the bar.</div>
+              </div>
             </div>
           )}
           <Tabs items={tabItems} />

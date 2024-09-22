@@ -8,7 +8,6 @@ import {
   query,
   collection,
   getDocs,
-  getDoc,
   where,
   limit,
   updateDoc,
@@ -211,7 +210,7 @@ const useOrder = () => {
     const orderQuery = query(
       collection(db, "orders"),
       where("createdBy.id", "==", user.id),
-      where("status", "==", "pending"),
+      where("status", "in", ["new", "pending"]),
       limit(1)
     );
 
@@ -261,38 +260,6 @@ const useOrder = () => {
       .catch((e) => console.error(e))
       .finally(() => setIsOrderLoading(false));
   }, [user, db]);
-
-  const getOrderById = useCallback(async () => {
-    const docRef = doc(db, "orders", orderId as string);
-    const updatedViewer = {
-      completedBy: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        photoURL: user.photoURL,
-      },
-    };
-
-    setIsOrderLoading(true);
-    await updateDoc(docRef, updatedViewer);
-    await getDoc(docRef)
-      .then((snapshot) => {
-        if (!snapshot.exists()) {
-          message.error("Order does not exist", 3);
-          setOrderId(null);
-          return;
-        }
-        const orderData = snapshot.data() as OrderType;
-        playSound(sound);
-        setOrderLoaded(orderData);
-      })
-      .catch((e) => {
-        console.error(e);
-      })
-      .finally(() => {
-        setIsOrderLoading(false);
-      });
-  }, [orderId, user, db]);
 
   const getOrderHistory = useCallback(() => {
     const historyQuery = query(
@@ -495,8 +462,9 @@ const useOrder = () => {
       })
       .finally(() => {
         setIsSaving(false);
+        getExistingOrder();
       });
-  }, [order, user, db]);
+  }, [order, user, db, getExistingOrder]);
 
   const updateOrderStatus = useCallback(
     (o: OrderType | null, status: OrderTypeStatus) => {
@@ -542,7 +510,6 @@ const useOrder = () => {
     getExistingOrder,
     getOrderHistory,
     cancelOrder,
-    getOrderById,
     setOrderId,
     getOrders,
     setOrderLoaded,

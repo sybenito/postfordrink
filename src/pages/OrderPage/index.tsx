@@ -148,12 +148,28 @@ const OrderPage: FC = () => {
             </Button>
           </div>
         )}
-        {!isOrderLoading && orderId && (
-          <div className="qr-code">
-            {orderLoaded?.completedBy && <CheckCircleFilled />}
-            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${orderId}`} alt="qr code" />
-            <h3>Scan QR code at the bar</h3>
-          </div>
+        {!isOrderLoading && !!orderId && !!orderLoaded && (
+          <>
+            <div className="order-pending">
+              {orderLoaded.status === "new" && (
+                <>
+                  <h3>Your order is in the works!</h3>
+                  <div className="drink-icon icon" />
+                  <h3>
+                    <strong>4</strong> orders before you
+                  </h3>
+                </>
+              )}
+              {orderLoaded.status === "pending" && (
+                <>
+                  <h3>Your order is being made!</h3>
+                  <CheckCircleFilled className="icon" />
+                  <h3>Make your way to the bar</h3>
+                </>
+              )}
+            </div>
+            <Divider>Your Order</Divider>
+          </>
         )}
         {user.tickets === 0 && (
           <div className="no-tickets">

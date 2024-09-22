@@ -161,15 +161,20 @@ h3 {
 }
 
 .ant-input {
+  background-color: $black !important;
+  &.ant-input-status-success {
+    background-color: $black !important;
+  }
   &.ant-input-disabled {
     opacity: 0.2;
   }
 }
 
+
 .ant-checkbox {
-.ant-checkbox-inner {
-  background-color: $black;
-}
+  .ant-checkbox-inner {
+    background-color: $black;
+  }
 }
 
 .drink-icon {

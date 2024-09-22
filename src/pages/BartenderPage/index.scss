@@ -13,7 +13,7 @@
   margin-bottom: 70px;
   .order-card {
     position: relative;
-    animation: 1s ease-out 0s 1 fadeIn;
+    animation: 1s ease-in-out 0s 1 fadeIn;
     cursor: default;
     &.new {
       cursor: pointer;
