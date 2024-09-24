@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, lazy } from "react";
 import type { FC } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Spin, ConfigProvider } from "antd";
@@ -7,7 +7,6 @@ import useAuth from "src/hooks/Auth";
 import { UserTypeEnum } from "src/models/user";
 import Error from "src/components/Error";
 import MainLayout from "src/layouts/MainLayout";
-import HomePage from "src/pages/HomePage";
 import RegisteredPage from "src/pages/RegisteredPage";
 import PhotoUploadPage from "src/pages/PhotoUploadPage";
 import OrderPage from "src/pages/OrderPage";
@@ -16,6 +15,8 @@ import THEME_CONFIG from "src/theme.config";
 import AdminPage from "src/pages/AdminPage";
 
 import "src/styles/App.scss";
+
+const HomePage = lazy(() => import("src/pages/HomePage"));
 
 type UserRoutesType = {
   [key in UserTypeEnum]: {

@@ -8,6 +8,7 @@ import {
   query,
   collection,
   getDocs,
+  getDoc,
   where,
   limit,
   updateDoc,
@@ -15,8 +16,6 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { message } from "antd";
-import { v4 as uuid } from "uuid";
-import sound from "src/ding.mp3";
 import type { UserType } from "src/models/user";
 import AuthContext from "src/store/auth-context";
 
@@ -97,16 +96,11 @@ const useOrder = () => {
   const [order, dispatchOrder] = useReducer(reduceOrder, []);
   const [orderLoaded, setOrderLoaded] = useState<OrderType | null>(null);
   const [ticketsPending, setTicketsPending] = useState<number>(0);
-  const [orderId, setOrderId] = useState<string | null>(null);
   const [newOrders, setNewOrders] = useState<OrderType[]>([]);
   const [completedOrders, setCompletedOrders] = useState<OrderType[]>([]);
+  const [newOrderCount, setNewOrderCount] = useState<number>(0);
 
   const db = getFirestore();
-
-  const playSound = (url: string) => {
-    const audio = new Audio(url);
-    audio.play();
-  };
 
   const getOrders = useCallback(
     (status: OrderTypeStatus) => {
@@ -144,6 +138,18 @@ const useOrder = () => {
     },
     [db]
   );
+
+  const getNewOrdersCount = useCallback(() => {
+    const orderQuery = query(collection(db, "orders"), where("status", "==", "new"));
+
+    onSnapshot(
+      orderQuery,
+      (snapshot) => {
+        setNewOrderCount(snapshot.docs.length);
+      },
+      (error) => console.error(error)
+    );
+  }, [db]);
 
   const getPendingOrder = useCallback(() => {
     const orderQuery = query(
@@ -215,51 +221,50 @@ const useOrder = () => {
     );
 
     setIsOrderLoading(true);
-    getDocs(orderQuery)
-      .then((snapshot) => {
-        if (snapshot.docs.length === 0) return;
 
+    onSnapshot(
+      orderQuery,
+      (snapshot) => {
         dispatchOrder({ type: "RESET_ORDER", payload: null });
 
-        const orderSnapshot = snapshot.docs[0].data() as OrderType;
-        orderSnapshot.drinks.forEach((d: DrinkType) => {
+        if (snapshot.docs.length === 0) {
+          setOrderLoaded(null);
+          setIsOrderLoading(false);
+          return;
+        }
+
+        const docsId = snapshot.docs[0].id;
+        const docsData = snapshot.docs[0].data();
+        docsData.drinks.forEach((d: DrinkType) => {
           dispatchOrder({ type: "ADD_DRINK", payload: d });
         });
 
-        setOrderId(snapshot.docs[0].id);
+        const data: OrderType = {
+          id: docsId,
+          createdBy: docsData.createdBy,
+          createdAt: docsData.createdAt,
+          drinks: docsData.drinks,
+          status: docsData.status,
+          completedBy: docsData.completedBy,
+          updatedAt: docsData.updatedAt,
+        };
 
-        const docRef = doc(db, "orders", snapshot.docs[0].id as string);
-        onSnapshot(docRef, (os) => {
-          if (os.exists()) {
-            const orderData = os.data() as OrderType;
+        if (data.status === "completed") {
+          setOrderLoaded(null);
+          dispatchOrder({ type: "RESET_ORDER", payload: null });
+          message.success("Order completed", 3);
+          setOrderLoaded(data);
+        } else {
+          setOrderLoaded(data);
+          getNewOrdersCount();
+        }
 
-            if (orderData.completedBy) {
-              if (orderData.status === "completed") {
-                setOrderId(null);
-                setOrderLoaded(null);
-                dispatchOrder({ type: "RESET_ORDER", payload: null });
-                message.success("Order completed", 3);
-              } else {
-                setOrderLoaded(orderData);
-                message.success(`Order taken by ${orderData.completedBy.name}`, 3);
-              }
-
-              if (navigator.vibrate) {
-                navigator.vibrate(100);
-              }
-
-              playSound(sound);
-            } else {
-              setOrderLoaded(orderData);
-            }
-          }
-        });
-
-        setOrderLoaded(orderSnapshot);
-      })
-      .catch((e) => console.error(e))
-      .finally(() => setIsOrderLoading(false));
-  }, [user, db]);
+        setIsOrderLoading(false);
+      },
+      (error) => console.error(error),
+      () => setIsOrderLoading(false)
+    );
+  }, [user, db, getNewOrdersCount]);
 
   const getOrderHistory = useCallback(() => {
     const historyQuery = query(
@@ -285,7 +290,8 @@ const useOrder = () => {
   }, [user, db]);
 
   const completeOrderLoaded = useCallback(() => {
-    const docRef = doc(db, "orders", orderId as string);
+    if (!orderLoaded) return;
+    const docRef = doc(db, "orders", orderLoaded.id);
     const updatedStatus = {
       status: "completed",
       completedBy: {
@@ -300,19 +306,38 @@ const useOrder = () => {
     setIsSaving(true);
     updateDoc(docRef, updatedStatus)
       .then(() => {
-        message.success("Order completed", 3);
+        message.success("Order completed", 2);
         setIsSaving(false);
-        setOrderId(null);
         setOrderLoaded(null);
+
+        // TODO:  This ticket update is not happening
+        const userRef = doc(db, "users", orderLoaded.createdBy.id);
+        getDoc(userRef)
+          .then((docSnap) => {
+            if (docSnap.exists()) {
+              const userDoc = docSnap.data();
+              if (userDoc) {
+                const tickets = userDoc.tickets - ticketsPending;
+                const updatedUser = {
+                  tickets,
+                };
+
+                updateDoc(userRef, updatedUser).catch((e) => console.error(e));
+              }
+            } else {
+              console.error("User does not exist");
+            }
+          })
+          .catch((e) => console.error(e));
       })
       .catch((e) => {
-        message.error("There was an issue completing the order. Please contact the host.", 5);
         console.error(e);
       });
-  }, [orderId, db, user]);
+  }, [db, user, orderLoaded, ticketsPending]);
 
   const cancelOrderLoaded = useCallback(() => {
-    const docRef = doc(db, "orders", orderId as string);
+    if (!orderLoaded) return;
+    const docRef = doc(db, "orders", orderLoaded.id);
     const updatedStatus = {
       status: "cancelled",
       updatedAt: serverTimestamp(),
@@ -320,17 +345,17 @@ const useOrder = () => {
 
     updateDoc(docRef, updatedStatus)
       .then(() => {
-        setOrderId(null);
         setOrderLoaded(null);
       })
       .catch((e) => {
         message.error("There was an issue cancelling the order. Please contact the host.", 5);
         console.error(e);
       });
-  }, [orderId, db]);
+  }, [db, orderLoaded]);
 
   const cancelOrder = useCallback(() => {
-    const docRef = doc(db, "orders", orderId as string);
+    if (!orderLoaded) return;
+    const docRef = doc(db, "orders", orderLoaded.id);
     const updatedStatus = {
       status: "cancelled",
       updatedAt: serverTimestamp(),
@@ -341,14 +366,13 @@ const useOrder = () => {
       .then(() => {
         message.success("Order cancelled!", 5);
         setIsSaving(false);
-        setOrderId(null);
         dispatchOrder({ type: "RESET_ORDER", payload: null });
       })
       .catch((e) => {
         message.error("There was an issue cancelling the order. Please contact the host.", 5);
         console.error(e);
       });
-  }, [orderId, db]);
+  }, [db, orderLoaded]);
 
   const getCocktail = useCallback(() => {
     const cocktailQuery = query(collection(db, "cocktail_type"));
@@ -436,8 +460,7 @@ const useOrder = () => {
 
   const saveOrder = useCallback(() => {
     const collectionRef = collection(db, "orders");
-    const newOrder: OrderType = {
-      id: uuid(),
+    const newOrder = {
       createdBy: {
         id: user.id,
         name: user.name,
@@ -453,8 +476,8 @@ const useOrder = () => {
     setIsSaving(true);
 
     addDoc(collectionRef, newOrder)
-      .then((docRef) => {
-        setOrderId(docRef.id);
+      .then(() => {
+        getExistingOrder();
       })
       .catch((e) => {
         message.error("There was an issue completing the order. Please contact the host.", 5);
@@ -462,7 +485,6 @@ const useOrder = () => {
       })
       .finally(() => {
         setIsSaving(false);
-        getExistingOrder();
       });
   }, [order, user, db, getExistingOrder]);
 
@@ -491,14 +513,20 @@ const useOrder = () => {
     [db, user]
   );
 
-  useEffect(() => {
+  const calculateTicketsFromOrder = useCallback((o: DrinkType[]) => {
     let ticketsTotal = 0;
-    order.forEach((drink: DrinkType) => {
+    o.forEach((drink: DrinkType) => {
       if (drink.double === true) ticketsTotal += 2;
       else ticketsTotal += 1;
     });
+    return ticketsTotal;
+  }, []);
+
+  useEffect(() => {
+    let ticketsTotal = 0;
+    ticketsTotal = calculateTicketsFromOrder(orderLoaded ? orderLoaded.drinks : order);
     setTicketsPending(ticketsTotal);
-  }, [order]);
+  }, [order, orderLoaded, calculateTicketsFromOrder]);
 
   return {
     getCocktail,
@@ -510,12 +538,10 @@ const useOrder = () => {
     getExistingOrder,
     getOrderHistory,
     cancelOrder,
-    setOrderId,
     getOrders,
     setOrderLoaded,
     completeOrderLoaded,
     cancelOrderLoaded,
-    playSound,
     newOrders,
     completedOrders,
     updateOrderStatus,
@@ -528,11 +554,11 @@ const useOrder = () => {
     order,
     orderLoaded,
     ticketsPending,
-    orderId,
     orderHistory,
     isSaving,
     isOrderLoading,
     isHistoryLoading,
+    newOrderCount,
   };
 };
 

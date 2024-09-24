@@ -32,12 +32,12 @@ const OrderPage: FC = () => {
     garnish,
     order,
     ticketsPending,
-    orderId,
     orderHistory,
     isSaving,
     isOrderLoading,
     isHistoryLoading,
     orderLoaded,
+    newOrderCount,
   } = useOrder();
   const [showOrderDrawer, setShowOrderDrawer] = useState(false);
   const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
@@ -124,7 +124,7 @@ const OrderPage: FC = () => {
           </h2>
         </Divider>
         {isOrderLoading && <Spin />}
-        {!isOrderLoading && !orderId && (
+        {!isOrderLoading && !orderLoaded && (
           <div className="order-actions">
             <Button
               type="primary"
@@ -148,7 +148,7 @@ const OrderPage: FC = () => {
             </Button>
           </div>
         )}
-        {!isOrderLoading && !!orderId && !!orderLoaded && (
+        {!isOrderLoading && !!orderLoaded && (
           <>
             <div className="order-pending">
               {orderLoaded.status === "new" && (
@@ -156,7 +156,7 @@ const OrderPage: FC = () => {
                   <h3>Your order is in the works!</h3>
                   <div className="drink-icon icon" />
                   <h3>
-                    <strong>4</strong> orders before you
+                    <strong>{newOrderCount}</strong> orders before you
                   </h3>
                 </>
               )}
@@ -164,7 +164,7 @@ const OrderPage: FC = () => {
                 <>
                   <h3>Your order is being made!</h3>
                   <CheckCircleFilled className="icon" />
-                  <h3>Make your way to the bar</h3>
+                  <h3>Please make your way over to the bar</h3>
                 </>
               )}
             </div>
@@ -179,15 +179,15 @@ const OrderPage: FC = () => {
             </Button>
           </div>
         )}
-        <DrinkList order={order} removeAction={handleRemoveDrink} showAction={!orderId} />
-        {order.length > 0 && !orderId && (
+        <DrinkList order={order} removeAction={handleRemoveDrink} showAction={!orderLoaded} />
+        {order.length > 0 && !orderLoaded && (
           <div className="order-actions wide">
             <Button type="primary" size="large" onClick={handleCompleteOrder} loading={isSaving}>
               Complete Order
             </Button>
           </div>
         )}
-        {order.length > 0 && orderId && (
+        {order.length > 0 && !!orderLoaded && (
           <div className="order-actions">
             <Button size="large" onClick={handleCancelOrderLoaded} loading={isSaving}>
               Cancel Order

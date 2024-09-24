@@ -12,7 +12,7 @@ const OrderPage: FC<OrderPageProps> = ({ drink }) => (
     {drink.alcohol && (
       <>
         <div className="alcohol item">
-          {drink.double ? "double " : ""}
+          {drink.double ? "Double " : ""}
           {drink.alcohol?.name}
         </div>
         <div className="mixer item">{drink.mixer.map((m) => m.name).join(" + ")}</div>

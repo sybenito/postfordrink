@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import type { RcFile } from "rc-upload/lib/interface";
 import { v4 as uuid } from "uuid";
 import { getStorage, ref, uploadBytesResumable } from "firebase/storage";
@@ -12,12 +12,12 @@ import {
   query,
   collection,
   updateDoc,
-  onSnapshot,
+  getDocs,
   orderBy,
   where,
+  limit,
 } from "firebase/firestore";
 import { message } from "antd";
-import type { DocumentData } from "firebase/firestore";
 import type { UserType } from "src/models/user";
 
 enum PhotoStatusEnum {
@@ -45,37 +45,41 @@ const usePhoto = () => {
   const [isPhotoLoading, setIsPhotoLoading] = useState<boolean>(false);
   const [photoComment, setPhotoComment] = useState<string>("");
   const [photoId, setPhotoId] = useState<string>(uuid());
-  const [photos, setPhotos] = useState<DocumentData[]>([]);
+  const [photos, setPhotos] = useState<PhotoType[]>([]);
   const db = getFirestore();
 
   const getPhotos = useCallback(
     (user?: UserType) => {
-      let q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+      let q = query(collection(db, "posts"), where("status", "==", "pending"), orderBy("createdAt", "desc"), limit(50));
       if (user) q = query(q, where("createdBy.id", "==", user.id));
 
       setIsPhotoLoading(true);
 
-      const unsubscribe = onSnapshot(
-        q,
-        (querySnapshot) => {
-          setPhotos(querySnapshot.docs);
-          setIsPhotoLoading(false);
-        },
-        (error) => {
-          console.error(error);
-          setIsPhotoLoading(false);
-        }
-      );
+      getDocs(q)
+        .then((querySnapshot) => {
+          const snapPhotos = querySnapshot.docs.map((docData) => {
+            const d = docData.data();
+            return {
+              id: d.id,
+              createdAt: d.createdAt,
+              createdBy: d.createdBy,
+              comment: d.comment,
+              status: d.status,
+              likes: d.likes,
+            };
+          });
 
-      return () => unsubscribe();
+          setPhotos(snapPhotos);
+        })
+        .catch((error) => {
+          console.error(error);
+        })
+        .finally(() => {
+          setIsPhotoLoading(false);
+        });
     },
     [db]
   );
-
-  useEffect(() => {
-    const unsubscribe = getPhotos();
-    return () => unsubscribe();
-  }, [getPhotos]);
 
   const createPhotoMetadata = useCallback(
     async (user: UserType) => {
@@ -96,6 +100,23 @@ const usePhoto = () => {
       setDoc(doc(db, "posts", photoId), photoMetadata).catch((e) => console.error(e));
     },
     [photoId, photoComment, db]
+  );
+
+  const deletePhoto = useCallback(
+    async (photo: PhotoType, user: UserType) => {
+      const photoRef = doc(db, "posts", photo.id);
+      return updateDoc(photoRef, { status: PhotoStatusEnum.DELETED })
+        .then(() => {
+          message.success("Photo deleted!");
+        })
+        .catch((e) => {
+          console.error(e);
+        })
+        .finally(() => {
+          getPhotos(user);
+        });
+    },
+    [db, getPhotos]
   );
 
   const uploadPhoto = useCallback(
@@ -119,9 +140,9 @@ const usePhoto = () => {
   );
 
   const toggleLike = useCallback(
-    async (photo: DocumentData, userId: string) => {
+    async (photo: PhotoType, userId: string) => {
       const photoRef = doc(db, "posts", photo.id);
-      const photoData: PhotoType = photo.data();
+      const photoData: PhotoType = photo;
       const { likes } = photoData;
       const likeIndex = likes.indexOf(userId);
 
@@ -153,6 +174,7 @@ const usePhoto = () => {
     toggleLike,
     photos,
     isPhotoLoading,
+    deletePhoto,
   };
 };
 
