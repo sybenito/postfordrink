@@ -7,6 +7,7 @@ import useAuth from "src/hooks/Auth";
 import { UserTypeEnum } from "src/models/user";
 import Error from "src/components/Error";
 import MainLayout from "src/layouts/MainLayout";
+import HomePage from "src/pages/HomePage";
 import RegisteredPage from "src/pages/RegisteredPage";
 import PhotoUploadPage from "src/pages/PhotoUploadPage";
 import OrderPage from "src/pages/OrderPage";
@@ -15,8 +16,6 @@ import THEME_CONFIG from "src/theme.config";
 import AdminPage from "src/pages/AdminPage";
 
 import "src/styles/App.scss";
-
-const HomePage = lazy(() => import("src/pages/HomePage"));
 
 type UserRoutesType = {
   [key in UserTypeEnum]: {
@@ -30,7 +29,7 @@ const userRoutes: UserRoutesType = {
     {
       path: "/",
       element: <HomePage />,
-      errorElement: <Error />,
+      errorElement: <HomePage />,
     },
     {
       path: "/registered",
@@ -67,7 +66,7 @@ const userRoutes: UserRoutesType = {
     {
       path: "/",
       element: <HomePage />,
-      errorElement: <Error />,
+      errorElement: <HomePage />,
     },
     {
       path: "/registered",
@@ -94,7 +93,7 @@ const userRoutes: UserRoutesType = {
     {
       path: "/",
       element: <HomePage />,
-      errorElement: <Error />,
+      errorElement: <HomePage />,
     },
     {
       path: "/registered",
