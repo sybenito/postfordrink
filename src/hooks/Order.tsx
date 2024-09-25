@@ -499,12 +499,14 @@ const useOrder = () => {
       getDocs(orderQuery)
         .then((snapshot) => {
           if (snapshot.docs.length === 0) {
-            setIsOrderModalVisible(false);
+            message.error("Order has been updated by another user", 3);
+          } else {
+            message.success("Order is up to date", 3);
           }
         })
         .catch((e) => console.error(e));
     },
-    [db, user, setIsOrderModalVisible]
+    [db, user]
   );
 
   const updateOrderPending = useCallback(
