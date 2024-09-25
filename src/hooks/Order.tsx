@@ -490,21 +490,18 @@ const useOrder = () => {
 
   const checkOrderPristine = useCallback(
     (checkOrder: OrderType) => {
-      const orderQuery = query(
-        collection(db, "orders"),
-        where("id", "==", checkOrder.id),
-        where("status", "==", "pending"),
-        where("completedBy.id", "==", user.id)
-      );
-      getDocs(orderQuery)
-        .then((snapshot) => {
-          if (snapshot.docs.length === 0) {
-            message.error("Order has been updated by another user", 3);
-          } else {
-            message.success("Order is up to date", 3);
+      getDoc(doc(db, "orders", checkOrder.id)).then((docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data) {
+            if (data.status !== "pending" && data.completedBy.id !== user.id) {
+              message.success("Order is up to date", 3);
+            } else {
+              message.error("Order has been updated by another user", 3);
+            }
           }
-        })
-        .catch((e) => console.error(e));
+        }
+      });
     },
     [db, user]
   );
