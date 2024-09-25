@@ -492,6 +492,7 @@ const useOrder = () => {
       const orderQuery = query(
         collection(db, "orders"),
         where("id", "==", checkOrder.id),
+        where("status", "==", "pending"),
         where("completedBy.id", "==", user.id)
       );
       getDocs(orderQuery)
