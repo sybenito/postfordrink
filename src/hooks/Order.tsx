@@ -488,24 +488,6 @@ const useOrder = () => {
     [db, user]
   );
 
-  const checkOrderPristine = useCallback(
-    (checkOrder: OrderType) => {
-      getDoc(doc(db, "orders", checkOrder.id)).then((docSnap) => {
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (data) {
-            if (data.status !== "pending" && data.completedBy.id !== user.id) {
-              message.success("Order is up to date", 3);
-            } else {
-              message.error("Order has been updated by another user", 3);
-            }
-          }
-        }
-      });
-    },
-    [db, user]
-  );
-
   const updateOrderPending = useCallback(
     (o: OrderType) => {
       const docRef = doc(db, "orders", o.id);
@@ -578,7 +560,6 @@ const useOrder = () => {
     isOrderLoading,
     isHistoryLoading,
     newOrderCount,
-    checkOrderPristine,
     isOrderModalVisible,
     setIsOrderModalVisible,
   };

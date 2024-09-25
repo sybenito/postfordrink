@@ -24,7 +24,6 @@ const BartenderPage: FC = () => {
     completedOrders,
     getOrders,
     getPendingOrder,
-    checkOrderPristine,
     isOrderModalVisible,
     setIsOrderModalVisible,
   } = useOrder();
@@ -63,9 +62,8 @@ const BartenderPage: FC = () => {
   useEffect(() => {
     if (orderLoaded) {
       setIsOrderModalVisible(true);
-      checkOrderPristine(orderLoaded);
     } else setIsOrderModalVisible(false);
-  }, [orderLoaded, checkOrderPristine, setIsOrderModalVisible]);
+  }, [orderLoaded, setIsOrderModalVisible]);
 
   useEffect(() => {
     if (isAutoDelegate && newOrders.length > 0 && !orderLoaded) {
