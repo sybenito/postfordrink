@@ -186,32 +186,6 @@ const useOrder = () => {
     );
   }, [user, db]);
 
-  const updateOrderPending = useCallback(
-    (o: OrderType) => {
-      const docRef = doc(db, "orders", o.id);
-      const updatedStatus = {
-        updatedBy: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          photoURL: user.photoURL,
-        },
-        status: "pending",
-        updatedAt: serverTimestamp(),
-      };
-
-      setIsSaving(true);
-      updateDoc(docRef, updatedStatus)
-        .catch((e) => {
-          console.error(e);
-        })
-        .finally(() => {
-          setIsSaving(false);
-        });
-    },
-    [db, user]
-  );
-
   const getExistingOrder = useCallback(() => {
     const orderQuery = query(
       collection(db, "orders"),
@@ -513,6 +487,52 @@ const useOrder = () => {
     [db, user]
   );
 
+  const checkOrderPristine = useCallback(
+    (checkOrder: OrderType) => {
+      const orderQuery = query(
+        collection(db, "orders"),
+        where("id", "==", checkOrder.id),
+        where("completedBy.id", "==", user.id)
+      );
+      getDocs(orderQuery)
+        .then((snapshot) => {
+          if (snapshot.docs.length === 0) {
+            const nextOrder = newOrders.shift();
+            if (nextOrder) setOrderLoaded(nextOrder);
+          }
+        })
+        .catch((e) => console.error(e));
+    },
+    [db, user, newOrders]
+  );
+
+  const updateOrderPending = useCallback(
+    (o: OrderType) => {
+      const docRef = doc(db, "orders", o.id);
+      const updatedStatus = {
+        updatedBy: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          photoURL: user.photoURL,
+        },
+        status: "pending",
+        updatedAt: serverTimestamp(),
+      };
+
+      setIsSaving(true);
+      updateDoc(docRef, updatedStatus)
+        .catch((e) => {
+          console.error(e);
+        })
+        .finally(() => {
+          setIsSaving(false);
+          checkOrderPristine(o);
+        });
+    },
+    [db, user, checkOrderPristine]
+  );
+
   const calculateTicketsFromOrder = useCallback((o: DrinkType[]) => {
     let ticketsTotal = 0;
     o.forEach((drink: DrinkType) => {
@@ -559,6 +579,7 @@ const useOrder = () => {
     isOrderLoading,
     isHistoryLoading,
     newOrderCount,
+    checkOrderPristine,
   };
 };
 
