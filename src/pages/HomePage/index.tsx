@@ -15,7 +15,6 @@ import { UserTypeEnum } from "src/models/user";
 import "src/pages/HomePage/index.scss";
 
 const HomePage: FC = () => {
-  useAuthProtect().validateAuth();
   const authContext = useContext<AuthContextType>(AuthContext);
   const { isSignedIn } = React.useContext(AuthContext);
 

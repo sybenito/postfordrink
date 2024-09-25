@@ -1,4 +1,4 @@
-import React, { useMemo, lazy } from "react";
+import React, { useMemo } from "react";
 import type { FC } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Spin, ConfigProvider } from "antd";
@@ -14,6 +14,7 @@ import OrderPage from "src/pages/OrderPage";
 import BartenderPage from "src/pages/BartenderPage";
 import THEME_CONFIG from "src/theme.config";
 import AdminPage from "src/pages/AdminPage";
+import SignIn from "./components/SignIn";
 
 import "src/styles/App.scss";
 
@@ -29,7 +30,7 @@ const userRoutes: UserRoutesType = {
     {
       path: "/",
       element: <HomePage />,
-      errorElement: <HomePage />,
+      errorElement: <SignIn />,
     },
     {
       path: "/registered",
@@ -45,7 +46,7 @@ const userRoutes: UserRoutesType = {
     },
     {
       path: "*",
-      element: <Error />,
+      element: <SignIn />,
     },
   ],
   bar: [
@@ -59,14 +60,14 @@ const userRoutes: UserRoutesType = {
     },
     {
       path: "*",
-      element: <Error />,
+      element: <SignIn />,
     },
   ],
   host: [
     {
       path: "/",
       element: <HomePage />,
-      errorElement: <HomePage />,
+      errorElement: <SignIn />,
     },
     {
       path: "/registered",
@@ -86,14 +87,14 @@ const userRoutes: UserRoutesType = {
     },
     {
       path: "*",
-      element: <Error />,
+      element: <SignIn />,
     },
   ],
   default: [
     {
       path: "/",
       element: <HomePage />,
-      errorElement: <HomePage />,
+      errorElement: <SignIn />,
     },
     {
       path: "/registered",
@@ -109,7 +110,7 @@ const userRoutes: UserRoutesType = {
     },
     {
       path: "*",
-      element: <Error />,
+      element: <SignIn />,
     },
   ],
 };

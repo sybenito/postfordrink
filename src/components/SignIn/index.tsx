@@ -15,7 +15,7 @@ import "firebaseui/dist/firebaseui.css";
 // Configure FirebaseUI.
 const uiConfig = {
   signInFlow: "popup",
-  signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID, "microsoft.com"],
+  signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
   callbacks: {
     // Avoid redirects after sign-in.
     signInSuccessWithAuthResult: () => false,
