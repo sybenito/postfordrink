@@ -17,8 +17,16 @@ const BartenderPage: FC = () => {
   const [isOrderModalVisible, setIsOrderModalVisible] = useState<boolean>(false);
   const [isAutoDelegate, setIsAutoDelegate] = useState<boolean>(false);
 
-  const { updateOrderPending, updateOrderStatus, orderLoaded, newOrders, completedOrders, getOrders, getPendingOrder } =
-    useOrder();
+  const {
+    updateOrderPending,
+    updateOrderStatus,
+    orderLoaded,
+    newOrders,
+    completedOrders,
+    getOrders,
+    getPendingOrder,
+    checkOrderPristine,
+  } = useOrder();
 
   useEffect(() => {
     getOrders("new");
@@ -52,8 +60,10 @@ const BartenderPage: FC = () => {
   );
 
   useEffect(() => {
-    if (orderLoaded) setIsOrderModalVisible(true);
-    else setIsOrderModalVisible(false);
+    if (orderLoaded) {
+      setIsOrderModalVisible(true);
+      checkOrderPristine(orderLoaded);
+    } else setIsOrderModalVisible(false);
   }, [orderLoaded]);
 
   useEffect(() => {

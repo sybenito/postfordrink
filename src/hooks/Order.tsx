@@ -527,10 +527,9 @@ const useOrder = () => {
         })
         .finally(() => {
           setIsSaving(false);
-          checkOrderPristine(o);
         });
     },
-    [db, user, checkOrderPristine]
+    [db, user]
   );
 
   const calculateTicketsFromOrder = useCallback((o: DrinkType[]) => {
