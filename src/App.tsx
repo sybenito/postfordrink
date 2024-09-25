@@ -14,7 +14,6 @@ import OrderPage from "src/pages/OrderPage";
 import BartenderPage from "src/pages/BartenderPage";
 import THEME_CONFIG from "src/theme.config";
 import AdminPage from "src/pages/AdminPage";
-import SignIn from "./components/SignIn";
 
 import "src/styles/App.scss";
 
@@ -30,7 +29,7 @@ const userRoutes: UserRoutesType = {
     {
       path: "/",
       element: <HomePage />,
-      errorElement: <SignIn />,
+      errorElement: <Error />,
     },
     {
       path: "/registered",
@@ -46,7 +45,7 @@ const userRoutes: UserRoutesType = {
     },
     {
       path: "*",
-      element: <SignIn />,
+      element: <Error />,
     },
   ],
   bar: [
@@ -60,14 +59,14 @@ const userRoutes: UserRoutesType = {
     },
     {
       path: "*",
-      element: <SignIn />,
+      element: <Error />,
     },
   ],
   host: [
     {
       path: "/",
       element: <HomePage />,
-      errorElement: <SignIn />,
+      errorElement: <Error />,
     },
     {
       path: "/registered",
@@ -87,14 +86,14 @@ const userRoutes: UserRoutesType = {
     },
     {
       path: "*",
-      element: <SignIn />,
+      element: <Error />,
     },
   ],
   default: [
     {
       path: "/",
       element: <HomePage />,
-      errorElement: <SignIn />,
+      errorElement: <Error />,
     },
     {
       path: "/registered",
@@ -110,7 +109,7 @@ const userRoutes: UserRoutesType = {
     },
     {
       path: "*",
-      element: <SignIn />,
+      element: <Error />,
     },
   ],
 };
