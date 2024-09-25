@@ -99,6 +99,7 @@ const useOrder = () => {
   const [newOrders, setNewOrders] = useState<OrderType[]>([]);
   const [completedOrders, setCompletedOrders] = useState<OrderType[]>([]);
   const [newOrderCount, setNewOrderCount] = useState<number>(0);
+  const [isOrderModalVisible, setIsOrderModalVisible] = useState<boolean>(false);
 
   const db = getFirestore();
 
@@ -498,13 +499,12 @@ const useOrder = () => {
       getDocs(orderQuery)
         .then((snapshot) => {
           if (snapshot.docs.length === 0) {
-            const nextOrder = newOrders.shift();
-            if (nextOrder) setOrderLoaded(nextOrder);
+            setIsOrderModalVisible(false);
           }
         })
         .catch((e) => console.error(e));
     },
-    [db, user, newOrders]
+    [db, user, setIsOrderModalVisible]
   );
 
   const updateOrderPending = useCallback(
@@ -580,6 +580,8 @@ const useOrder = () => {
     isHistoryLoading,
     newOrderCount,
     checkOrderPristine,
+    isOrderModalVisible,
+    setIsOrderModalVisible,
   };
 };
 

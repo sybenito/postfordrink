@@ -14,7 +14,6 @@ import "./index.scss";
 const BartenderPage: FC = () => {
   useAuthProtect().validateAuth();
   const { user } = useContext(AuthContext);
-  const [isOrderModalVisible, setIsOrderModalVisible] = useState<boolean>(false);
   const [isAutoDelegate, setIsAutoDelegate] = useState<boolean>(false);
 
   const {
@@ -26,6 +25,8 @@ const BartenderPage: FC = () => {
     getOrders,
     getPendingOrder,
     checkOrderPristine,
+    isOrderModalVisible,
+    setIsOrderModalVisible,
   } = useOrder();
 
   useEffect(() => {
@@ -64,7 +65,7 @@ const BartenderPage: FC = () => {
       setIsOrderModalVisible(true);
       checkOrderPristine(orderLoaded);
     } else setIsOrderModalVisible(false);
-  }, [orderLoaded, checkOrderPristine]);
+  }, [orderLoaded, checkOrderPristine, setIsOrderModalVisible]);
 
   useEffect(() => {
     if (isAutoDelegate && newOrders.length > 0 && !orderLoaded) {
