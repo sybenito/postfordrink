@@ -40,7 +40,7 @@ const SlideShow: FC = () => {
     }
 
     return () => {};
-  }, [newPhoto, setNewPhoto, setPhoto, showPhoto, setShowPhoto]);
+  }, [newPhoto, setNewPhoto, setPhoto, showPhoto, setShowPhoto, photos]);
 
   return (
     <div className="slide-show">
