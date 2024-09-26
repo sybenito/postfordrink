@@ -20,11 +20,6 @@ const SlideShow: FC = () => {
 
   useEffect(() => {
     if (photos.length > 0) {
-      if (!photo) {
-        setPhoto(photos[0]);
-        return () => {};
-      }
-
       const interval = setInterval(() => {
         const currentIndex = Math.floor(Math.random() * photos.length);
         setShowPhoto(false);
@@ -39,7 +34,7 @@ const SlideShow: FC = () => {
     }
 
     return () => {};
-  }, [photo, photos, setPhoto, showPhoto, setShowPhoto]);
+  }, [photos, setPhoto, showPhoto, setShowPhoto]);
 
   return (
     <div className="slide-show">

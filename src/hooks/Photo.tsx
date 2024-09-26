@@ -71,6 +71,7 @@ const usePhoto = () => {
       if (snapPhotos.length > photos.length) {
         setPhotos(snapPhotos);
         setPhoto(snapPhotos[0]);
+        setShowPhoto(true);
       }
     });
   }, [db, photos, setPhotos]);
