@@ -13,14 +13,15 @@ interface PhotoProps {
   photo: PhotoType;
   path: string;
   postfix?: string;
-  likeAction: (photo: PhotoType, userId: string) => Promise<void | string[]>;
-  deleteAction: (photo: PhotoType, user: UserType) => void;
+  likeAction?: (photo: PhotoType, userId: string) => Promise<void | string[]>;
+  deleteAction?: (photo: PhotoType, user: UserType) => void;
   userView: boolean;
+  slideShowView?: boolean;
 }
 
 const storage: FirebaseStorage = getStorage();
 
-const Photo: FC<PhotoProps> = ({ photo, path, postfix, likeAction, deleteAction, userView }) => {
+const Photo: FC<PhotoProps> = ({ photo, path, postfix, likeAction, deleteAction, userView, slideShowView }) => {
   const { user } = useContext(AuthContext);
   const [photoURL, setPhotoURL] = useState<string>("");
   const [photoData, setPhotoData] = useState<PhotoType | null>(null);
@@ -30,6 +31,7 @@ const Photo: FC<PhotoProps> = ({ photo, path, postfix, likeAction, deleteAction,
 
   const handleLikeAction = () => {
     setIsLiking(true);
+    if (!likeAction) return;
     likeAction(photo, user?.id || "")
       .then((likes) => {
         if (likes) {
@@ -45,6 +47,7 @@ const Photo: FC<PhotoProps> = ({ photo, path, postfix, likeAction, deleteAction,
   };
 
   const handleDelete = () => {
+    if (!deleteAction) return;
     deleteAction(photo, user as UserType);
   };
 
@@ -76,17 +79,19 @@ const Photo: FC<PhotoProps> = ({ photo, path, postfix, likeAction, deleteAction,
     <>
       {photoURL && (
         <>
-          <div className="meta">
-            <div className="comment">
-              <h3 className="owner">{photoData?.createdBy.name}</h3>
-              {photoData?.comment}
+          {!slideShowView && (
+            <div className="meta">
+              <div className="comment">
+                <h3 className="owner">{photoData?.createdBy.name}</h3>
+                {photoData?.comment}
+              </div>
             </div>
-          </div>
+          )}
           <div className="photo">
             <Image src={photoURL} preview={false} placeholder={spinnerElement} loading="lazy" alt={photo.id} />
           </div>
           <div className="actions">
-            {!userView && (
+            {!userView && !slideShowView && (
               <>
                 <div className="like-count">{likesCount > 0 && <span>{likesCount} Likes</span>}</div>
                 <div
@@ -107,7 +112,7 @@ const Photo: FC<PhotoProps> = ({ photo, path, postfix, likeAction, deleteAction,
                 </div>
               </>
             )}
-            {userView && (
+            {userView && !slideShowView && (
               <Button icon={<DeleteOutlined />} onClick={handleDelete}>
                 Delete
               </Button>

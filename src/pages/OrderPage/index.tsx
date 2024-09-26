@@ -104,10 +104,10 @@ const OrderPage: FC = () => {
       <div className="header">
         <h1>Join Us For a Drink!</h1>
         <p>
-          <strong>First</strong> complete your drink order
+          <strong>First</strong> complete your drink order.
         </p>
         <p>
-          <strong>Then</strong> scan your QR code at the bar.
+          <strong>Then</strong> head over to the bar.
         </p>
         <p>Be sure to post more photos to get more drink passes.</p>
         <br />

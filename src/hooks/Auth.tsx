@@ -53,6 +53,7 @@ const useAuth = (): AuthContextType => {
           email: authUser.email || "",
           name: authUser.displayName || "",
           photoURL: authUser.photoURL || "",
+          type: UserTypeEnum.GUEST,
         };
         await createGuestUser(newUser)
           .then(() => setUser(newUser))

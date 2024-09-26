@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import type { FC } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Spin, ConfigProvider } from "antd";
+import SlideShow from "src/pages/SlideShow";
 import AuthContext from "src/store/auth-context";
 import useAuth from "src/hooks/Auth";
 import { UserTypeEnum } from "src/models/user";
@@ -44,6 +45,10 @@ const userRoutes: UserRoutesType = {
       element: <OrderPage />,
     },
     {
+      path: "/slide",
+      element: <SlideShow />,
+    },
+    {
       path: "*",
       element: <Error />,
     },
@@ -56,6 +61,10 @@ const userRoutes: UserRoutesType = {
     {
       path: "/registered",
       element: <RegisteredPage />,
+    },
+    {
+      path: "/slide",
+      element: <SlideShow />,
     },
     {
       path: "*",
@@ -85,6 +94,10 @@ const userRoutes: UserRoutesType = {
       element: <AdminPage />,
     },
     {
+      path: "/slide",
+      element: <SlideShow />,
+    },
+    {
       path: "*",
       element: <Error />,
     },
@@ -106,6 +119,10 @@ const userRoutes: UserRoutesType = {
     {
       path: "/order",
       element: <Spin />,
+    },
+    {
+      path: "/slide",
+      element: <SlideShow />,
     },
     {
       path: "*",

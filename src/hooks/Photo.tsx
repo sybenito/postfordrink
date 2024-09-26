@@ -12,6 +12,7 @@ import {
   query,
   collection,
   updateDoc,
+  onSnapshot,
   getDocs,
   orderBy,
   where,
@@ -46,7 +47,33 @@ const usePhoto = () => {
   const [photoComment, setPhotoComment] = useState<string>("");
   const [photoId, setPhotoId] = useState<string>(uuid());
   const [photos, setPhotos] = useState<PhotoType[]>([]);
+  const [photo, setPhoto] = useState<PhotoType | null>(null);
+  const [showPhoto, setShowPhoto] = useState<boolean>(false);
+
   const db = getFirestore();
+
+  const getRealTimePhotos = useCallback(() => {
+    const q = query(collection(db, "posts"), where("status", "==", "pending"), orderBy("createdAt", "desc"));
+
+    onSnapshot(q, (querySnapshot) => {
+      const snapPhotos = querySnapshot.docs.map((docData) => {
+        const d = docData.data();
+        return {
+          id: d.id,
+          createdAt: d.createdAt,
+          createdBy: d.createdBy,
+          comment: d.comment,
+          status: d.status,
+          likes: d.likes,
+        };
+      });
+
+      if (snapPhotos.length > photos.length) {
+        setPhotos(snapPhotos);
+        setPhoto(snapPhotos[0]);
+      }
+    });
+  }, [db, photos, setPhotos]);
 
   const getPhotos = useCallback(
     (user?: UserType) => {
@@ -103,8 +130,8 @@ const usePhoto = () => {
   );
 
   const deletePhoto = useCallback(
-    async (photo: PhotoType, user: UserType) => {
-      const photoRef = doc(db, "posts", photo.id);
+    async (p: PhotoType, user: UserType) => {
+      const photoRef = doc(db, "posts", p.id);
       return updateDoc(photoRef, { status: PhotoStatusEnum.DELETED })
         .then(() => {
           message.success("Photo deleted!");
@@ -140,9 +167,9 @@ const usePhoto = () => {
   );
 
   const toggleLike = useCallback(
-    async (photo: PhotoType, userId: string) => {
-      const photoRef = doc(db, "posts", photo.id);
-      const photoData: PhotoType = photo;
+    async (p: PhotoType, userId: string) => {
+      const photoRef = doc(db, "posts", p.id);
+      const photoData: PhotoType = p;
       const { likes } = photoData;
       const likeIndex = likes.indexOf(userId);
 
@@ -175,6 +202,11 @@ const usePhoto = () => {
     photos,
     isPhotoLoading,
     deletePhoto,
+    getRealTimePhotos,
+    photo,
+    setPhoto,
+    showPhoto,
+    setShowPhoto,
   };
 };
 
