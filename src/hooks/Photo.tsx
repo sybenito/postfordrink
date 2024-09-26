@@ -49,6 +49,7 @@ const usePhoto = () => {
   const [photos, setPhotos] = useState<PhotoType[]>([]);
   const [photo, setPhoto] = useState<PhotoType | null>(null);
   const [showPhoto, setShowPhoto] = useState<boolean>(false);
+  const [newPhoto, setNewPhoto] = useState<PhotoType | null>(null);
 
   const db = getFirestore();
 
@@ -70,7 +71,7 @@ const usePhoto = () => {
 
       if (snapPhotos.length > photos.length) {
         setPhotos(snapPhotos);
-        setPhoto(snapPhotos[0]);
+        setNewPhoto(snapPhotos[0]);
         setShowPhoto(true);
       }
     });
@@ -208,6 +209,8 @@ const usePhoto = () => {
     setPhoto,
     showPhoto,
     setShowPhoto,
+    newPhoto,
+    setNewPhoto,
   };
 };
 

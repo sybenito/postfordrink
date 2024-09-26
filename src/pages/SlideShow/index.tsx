@@ -12,7 +12,7 @@ const PHOTO_DISPLAY_INTERVAL = 12000;
 
 const SlideShow: FC = () => {
   useContext(AuthContext);
-  const { getRealTimePhotos, photos, photo, setPhoto, showPhoto, setShowPhoto } = usePhoto();
+  const { getRealTimePhotos, photos, photo, setPhoto, showPhoto, setShowPhoto, newPhoto, setNewPhoto } = usePhoto();
 
   useEffect(() => {
     getRealTimePhotos();
@@ -23,7 +23,13 @@ const SlideShow: FC = () => {
       const interval = setInterval(() => {
         const currentIndex = Math.floor(Math.random() * photos.length);
         setShowPhoto(false);
-        setPhoto(photos[currentIndex]);
+
+        if (newPhoto) {
+          setPhoto(newPhoto);
+          setNewPhoto(null);
+        } else {
+          setPhoto(photos[currentIndex]);
+        }
       }, PHOTO_DISPLAY_INTERVAL);
       return () => {
         clearInterval(interval);
@@ -34,7 +40,7 @@ const SlideShow: FC = () => {
     }
 
     return () => {};
-  }, [photos, setPhoto, showPhoto, setShowPhoto]);
+  }, [newPhoto, setNewPhoto, setPhoto, showPhoto, setShowPhoto]);
 
   return (
     <div className="slide-show">
