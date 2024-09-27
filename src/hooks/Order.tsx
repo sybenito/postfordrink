@@ -24,18 +24,21 @@ interface AlcoholType {
   name: string;
   canDouble: boolean;
   available?: boolean;
+  index?: number;
 }
 
 interface MixerType {
   id?: string;
   name: string;
   available?: boolean;
+  index?: number;
 }
 
 interface GarnishType {
   id?: string;
   name: string;
   available?: boolean;
+  index?: number;
 }
 
 interface CocktailType {
@@ -43,6 +46,7 @@ interface CocktailType {
   name: string;
   available?: boolean;
   description: string;
+  index?: number;
 }
 
 type OrderUserType = Omit<UserType, "type" | "tickets">;
@@ -350,7 +354,7 @@ const useOrder = () => {
   }, [db, orderLoaded]);
 
   const getCocktail = useCallback(() => {
-    const cocktailQuery = query(collection(db, "cocktail_type"));
+    const cocktailQuery = query(collection(db, "cocktail_type"), orderBy("index", "asc"));
     const cocktailList: CocktailType[] = [];
 
     getDocs(cocktailQuery)
@@ -361,6 +365,7 @@ const useOrder = () => {
             name: d.data().name,
             available: d.data().available,
             description: d.data().description,
+            index: d.data().index,
           };
 
           cocktailList.push(newCocktail);
@@ -372,7 +377,7 @@ const useOrder = () => {
   }, [db]);
 
   const getAlcohol = useCallback(() => {
-    const alcoholQuery = query(collection(db, "alcohol_type"));
+    const alcoholQuery = query(collection(db, "alcohol_type"), orderBy("index", "asc"));
     const alcoholList: AlcoholType[] = [];
 
     getDocs(alcoholQuery)
@@ -381,8 +386,9 @@ const useOrder = () => {
           const newAlcohol: AlcoholType = {
             id: d.id,
             name: d.data().name,
-            canDouble: d.data().can_double,
-            available: d.data().available,
+            canDouble: d.data().canDouble ?? false,
+            available: d.data().available ?? false,
+            index: d.data().index,
           };
 
           alcoholList.push(newAlcohol);
@@ -394,7 +400,7 @@ const useOrder = () => {
   }, [db]);
 
   const getMixer = useCallback(() => {
-    const mixerQuery = query(collection(db, "mixer_type"));
+    const mixerQuery = query(collection(db, "mixer_type"), orderBy("index", "asc"));
     const mixerList: MixerType[] = [];
 
     getDocs(mixerQuery)
@@ -404,6 +410,7 @@ const useOrder = () => {
             id: d.id,
             name: d.data().name,
             available: d.data().available,
+            index: d.data().index,
           };
           mixerList.push(newMixer);
         });
@@ -414,7 +421,7 @@ const useOrder = () => {
   }, [db]);
 
   const getGarnish = useCallback(() => {
-    const garnishQuery = query(collection(db, "garnish_type"));
+    const garnishQuery = query(collection(db, "garnish_type"), orderBy("index", "asc"));
     const garnishList: GarnishType[] = [];
 
     getDocs(garnishQuery)
@@ -424,6 +431,7 @@ const useOrder = () => {
             id: d.id,
             name: d.data().name,
             available: d.data().available,
+            index: d.data().index,
           };
           garnishList.push(newGarnish);
         });
@@ -449,7 +457,6 @@ const useOrder = () => {
     };
 
     setIsSaving(true);
-
     addDoc(collectionRef, newOrder)
       .then(() => {
         getExistingOrder();

@@ -163,7 +163,7 @@ const DrinkForm: FC<DrinkFormProps> = ({ submitDrink, cocktail, alcohol, mixer, 
       </Form>
       <br />
       <br />
-      <Divider orientation="left">Create a Drink</Divider>
+      <Divider orientation="left">OR - Create a Drink</Divider>
       <Form name="orderDrink" layout="vertical" onFinish={handleSubmit} className="drink-form">
         <Form.Item name="alcohol" rules={[validationRules.optional]}>
           <Select

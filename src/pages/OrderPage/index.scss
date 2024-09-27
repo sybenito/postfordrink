@@ -28,6 +28,15 @@
   }
 }
 
+.update-tag {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+  .ant-tag {
+    margin: 0;
+  }
+}
+
 .virtual-hostess {
   .order-pending {
     display: flex;

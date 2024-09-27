@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { FC } from "react";
-import { Drawer, Button, Form, Input, Checkbox, Space, Table, TableProps } from "antd";
+import { Drawer, Button, Form, Input, Checkbox, Space, Table, TableProps, InputNumber } from "antd";
 import useOrder, { AlcoholType, MixerType, GarnishType, CocktailType } from "src/hooks/Order";
 import useAdmin from "src/hooks/Admin";
 
@@ -19,6 +19,11 @@ const optionsColumns: TableProps<CocktailType | AlcoholType | MixerType | Garnis
     dataIndex: "available",
     key: "available",
     render: (available: boolean) => (available ? "Yes" : "No"),
+  },
+  {
+    title: "Inde",
+    dataIndex: "index",
+    key: "index",
   },
 ];
 
@@ -78,7 +83,10 @@ const BarTab: FC = () => {
   };
 
   const handleSubmit = (e: object) => {
-    const { name, canDouble, available, description } = e as CocktailType & AlcoholType & MixerType & GarnishType;
+    const { name, canDouble, available, description, index } = e as CocktailType &
+      AlcoholType &
+      MixerType &
+      GarnishType;
     let formData: CocktailType | AlcoholType | MixerType | GarnishType;
     switch (stockType) {
       case "COCKTAIL":
@@ -86,6 +94,7 @@ const BarTab: FC = () => {
           name,
           description: description || "",
           available: available || false,
+          index: index || 0,
         };
 
         if (selectedStock?.id) {
@@ -98,6 +107,7 @@ const BarTab: FC = () => {
           name,
           canDouble: canDouble || false,
           available: available || false,
+          index: index || 0,
         };
 
         if (selectedStock?.id) {
@@ -109,6 +119,7 @@ const BarTab: FC = () => {
         formData = {
           name,
           available: available || false,
+          index: index || 0,
         };
 
         if (selectedStock?.id) {
@@ -120,6 +131,7 @@ const BarTab: FC = () => {
         formData = {
           name,
           available: available || false,
+          index: index || 0,
         };
 
         if (selectedStock?.id) {
@@ -154,6 +166,9 @@ const BarTab: FC = () => {
       )}
       <Form.Item name="available" label="Is Available" valuePropName="checked">
         <Checkbox disabled={isSaving} />
+      </Form.Item>
+      <Form.Item name="index" label="index" rules={[{ required: true }]}>
+        <InputNumber disabled={isSaving} />
       </Form.Item>
     </Form>
   );

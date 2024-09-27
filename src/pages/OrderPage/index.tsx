@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useMemo } from "react";
 import type { FC } from "react";
-import { Divider, Button, Drawer, Modal, Spin, message } from "antd";
-import { CheckCircleFilled, HistoryOutlined, CameraOutlined } from "@ant-design/icons";
+import { Divider, Button, Drawer, Modal, Spin, message, Tag } from "antd";
+import { CheckCircleFilled, HistoryOutlined, CameraOutlined, EyeOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "src/store/auth-context";
 import useOrder from "src/hooks/Order";
@@ -150,6 +150,11 @@ const OrderPage: FC = () => {
         )}
         {!isOrderLoading && !!orderLoaded && (
           <>
+            <div className="update-tag">
+              <Tag color="green" icon={<EyeOutlined />}>
+                Live Update Status
+              </Tag>
+            </div>
             <div className="order-pending">
               {orderLoaded.status === "new" && (
                 <>
@@ -183,7 +188,7 @@ const OrderPage: FC = () => {
         {order.length > 0 && !orderLoaded && (
           <div className="order-actions wide">
             <Button type="primary" size="large" onClick={handleCompleteOrder} loading={isSaving}>
-              Complete Order
+              Send This Order To the Bar
             </Button>
           </div>
         )}
